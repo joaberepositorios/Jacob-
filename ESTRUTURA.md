@@ -1,8 +1,8 @@
-# Estrutura do aplicativo Habpt: uma análise da organização em código
+# Estrutura do aplicativo ReHabto: uma análise da organização em código
 
 ## Resumo
 
-O Habpt é um aplicativo de formação de hábitos que estrutura uma "trilha" de 40
+O ReHabto é um aplicativo de formação de hábitos que estrutura uma "trilha" de 40
 dias consecutivos de uma mesma tarefa. Este texto descreve, em nível introdutório, a
 organização do seu código-fonte, destacando a separação em camadas, a estratégia de
 persistência com dois backends intercambiáveis, a lógica de domínio derivada de dados
@@ -136,7 +136,7 @@ O mesmo código serve a três alvos de execução:
 
 ## 8. Considerações finais
 
-A organização do Habpt exemplifica princípios de baixo acoplamento: a separação em
+A organização do ReHabto exemplifica princípios de baixo acoplamento: a separação em
 camadas isola a interface do armazenamento; a abstração do SGBD permite trocar SQLite por
 PostgreSQL sem alterar o domínio; e a opção por **estado derivado** simplifica as regras
 de gamificação. Como consequência, a mesma lógica de hábitos pôde ser reencarnada em

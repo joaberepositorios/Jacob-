@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Habpt — versão estática (client-side) para GitHub Pages.
+   ReHabto — versão estática (client-side) para GitHub Pages.
    Mesma UI/CSS do app Flask; a lógica roda no navegador e os dados ficam no
    localStorage (por navegador). Sem servidor.
    ========================================================================== */
@@ -146,7 +146,7 @@
       "Entretenimento": "cat-entretenimento", "Finanças pessoais": "cat-financas", "Trabalho / carreira": "cat-trabalho", "Outro": "star" };
     return icon(map[cat] || "star", cls);
   }
-  const marcaJ = () => '<span class="marca-j" aria-label="Habpt"><span class="mj-letra">Habpt</span></span>';
+  const marcaJ = () => '<span class="marca-j" aria-label="ReHabto"><span class="mj-letra">ReHabto</span></span>';
 
   // ----------------------------- Roteamento -----------------------------
   const root = () => document.getElementById("root");

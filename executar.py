@@ -22,7 +22,7 @@ if __name__ == "__main__":
     thread_flask.start()
 
     webview.create_window(
-        "Habpt",
+        "ReHabto",
         f"http://{HOST}:{PORT}",
         width=1180,
         height=760,
