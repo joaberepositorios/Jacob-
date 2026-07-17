@@ -194,9 +194,6 @@ def dashboard():
 
     travado = esta_travado(usuario)
     limite = datetime.fromisoformat(usuario["locked_until"]) if usuario.get("locked_until") else None
-    # Bloqueado: por padrão mostra a tela de bloqueio; com ?ver=1 abre em modo só-leitura.
-    if travado and not request.args.get("ver"):
-        return render_template("travado.html", limite=limite)
 
     plano = db.buscar_plano_ativo(usuario["id"])
     if not plano:
@@ -209,6 +206,17 @@ def dashboard():
 
     registro_hoje = db.ja_registrou_hoje(plano["id"], dia_numero)
     historico = db.historico_do_plano(plano["id"])
+    eng = calcular_engajamento(historico)
+
+    # Bloqueado: por padrão mostra a tela de bloqueio (com feedback de ofensiva); ?ver=1 = só-leitura.
+    if travado and not request.args.get("ver"):
+        antes = calcular_engajamento([h for h in historico if h["dia_numero"] != dia_numero])
+        novos_marcos = [m for m in eng["marcos"] if m not in antes["marcos"]]
+        protegido = bool(registro_hoje and registro_hoje["status"] == "falha"
+                         and eng["ofensiva"] == antes["ofensiva"] and eng["ofensiva"] > 0)
+        return render_template("travado.html", limite=limite, eng=eng,
+                               novos_marcos=novos_marcos, protegido=protegido)
+
     trilha = montar_trilha(plano, dia_numero, historico)
 
     cumpridas_total = sum(1 for h in historico if h["status"] == "cumprida")
@@ -226,6 +234,8 @@ def dashboard():
         cumpridas_total=cumpridas_total,
         falhas_total=falhas_total,
         sequencia=sequencia,
+        eng=eng,
+        frase_dia=frase_do_dia(),
         pct=pct,
         calendario=calendario,
         travado=travado,
@@ -281,6 +291,47 @@ def sequencia_atual(historico):
         else:
             seq = 0
     return seq
+
+
+# ---------------- Engajamento (ofensiva / marcos / congeladores) ----------------
+
+MARCOS = [3, 7, 14, 30, 40]
+CAP_CONGELADORES = 3
+GANHA_A_CADA = 5
+
+FRASES = [
+    "Um dia de cada vez constrói o hábito.", "Constância vence intensidade.",
+    "Você contra você de ontem.", "Pequenos passos, grandes trilhas.",
+    "O hábito nasce da repetição.", "Hoje conta — não quebre a corrente.",
+    "Disciplina é liberdade.", "Cada dia cumprido é um tijolo na sua rotina.",
+    "A ofensiva mais forte é a que você mantém.", "Foco no processo; o resultado vem.",
+    "Comece agora, o futuro agradece.", "40 dias. Um de cada vez.",
+]
+
+
+def frase_do_dia():
+    return FRASES[date.today().timetuple().tm_yday % len(FRASES)]
+
+
+def calcular_engajamento(historico):
+    """Deriva ofensiva, melhor, congeladores e marcos a partir do histórico ordenado.
+    Um congelador é ganho a cada N cumpridas e protege a ofensiva numa falha."""
+    streak = melhor = freezes = cumpridas = 0
+    for h in sorted(historico, key=lambda x: x["dia_numero"]):
+        if h["status"] == "cumprida":
+            streak += 1
+            cumpridas += 1
+            if cumpridas % GANHA_A_CADA == 0 and freezes < CAP_CONGELADORES:
+                freezes += 1
+            melhor = max(melhor, streak)
+        else:
+            if freezes > 0:
+                freezes -= 1
+            else:
+                streak = 0
+    marcos = [m for m in MARCOS if melhor >= m]
+    return {"ofensiva": streak, "melhor": melhor, "congeladores": freezes,
+            "marcos": marcos, "cumpridas": cumpridas}
 
 
 def cor_gradiente(i, total):

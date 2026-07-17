@@ -77,6 +77,35 @@
   }
   function sequenciaAtual(h) { let s = 0; h.forEach(r => { s = r.status === "cumprida" ? s + 1 : 0; }); return s; }
 
+  // Engajamento (derivado do histórico): ofensiva, melhor, congeladores, marcos.
+  const MARCOS = [3, 7, 14, 30, 40];
+  const CAP_CONGELADORES = 3, GANHA_A_CADA = 5;
+  const FRASES = [
+    "Um dia de cada vez constrói o hábito.", "Constância vence intensidade.",
+    "Você contra você de ontem.", "Pequenos passos, grandes trilhas.",
+    "O hábito nasce da repetição.", "Hoje conta — não quebre a corrente.",
+    "Disciplina é liberdade.", "Cada dia cumprido é um tijolo na sua rotina.",
+    "A ofensiva mais forte é a que você mantém.", "Foco no processo; o resultado vem.",
+    "Comece agora, o futuro agradece.", "40 dias. Um de cada vez.",
+  ];
+  function fraseDoDia() { const t = new Date(); const d = Math.floor((t - new Date(t.getFullYear(), 0, 0)) / 86400000); return FRASES[d % FRASES.length]; }
+
+  function calcularEngajamento(h) {
+    let streak = 0, melhor = 0, freezes = 0, cumpridas = 0, protegido = false;
+    h.forEach(r => {
+      if (r.status === "cumprida") {
+        streak++; cumpridas++;
+        if (cumpridas % GANHA_A_CADA === 0 && freezes < CAP_CONGELADORES) freezes++;
+        if (streak > melhor) melhor = streak;
+        protegido = false;
+      } else {
+        if (freezes > 0) { freezes--; protegido = true; } else { streak = 0; protegido = false; }
+      }
+    });
+    const marcos = MARCOS.filter(m => melhor >= m);
+    return { ofensiva: streak, melhor, congeladores: freezes, marcos, cumpridas, ultimoProtegido: protegido };
+  }
+
   // ----------------------------- Ícones (SVG) -----------------------------
   function icon(name, cls) {
     cls = cls || "ico";
@@ -91,6 +120,9 @@
       chart: '<line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/>',
       star: '<polygon points="12 3 14.6 8.6 20.6 9.3 16 13.5 17.3 19.4 12 16.3 6.7 19.4 8 13.5 3.4 9.3 9.4 8.6 12 3"/>',
       zap: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+      flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+      medal: '<circle cx="12" cy="8" r="6"/><path d="M15.48 12.89 17 22l-5-3-5 3 1.52-9.11"/>',
+      shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
       lock: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
       logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>',
       user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
@@ -274,6 +306,7 @@
     const reg = registroHoje(p.id, dia);
     const cumpridas = h.filter(r => r.status === "cumprida").length;
     const seq = sequenciaAtual(h);
+    const eng = calcularEngajamento(h);
     const pct = Math.round((dia - 1) / p.dias_totais * 100);
     const statusPorDia = {}; h.forEach(r => statusPorDia[r.dia_numero] = r.status);
     const inicio = parseYmd(p.data_inicio);
@@ -333,11 +366,24 @@
         '<div class="acoes-secundarias"><button id="btn-desisti" class="btn btn-outline" type="button">' + icon("x") + " Desistir de hoje</button></div>";
     }
 
+    const medalhas = '<div class="of-medalhas">' + MARCOS.map(m =>
+      '<span class="medalha ' + (eng.marcos.includes(m) ? "ganha" : "bloqueada") + '" title="' + m + ' dias">' + icon("medal") + "<b>" + m + "</b></span>").join("") + "</div>";
+    const ofensivaCard = '<div class="ofensiva-card bloco"><div class="of-hero">' +
+      '<div class="of-flame">' + icon("flame") + '<span class="of-num">' + eng.ofensiva + "</span></div>" +
+      '<div class="of-info"><div class="of-label">dias de ofensiva</div>' +
+      '<div class="of-meta">Melhor: ' + eng.melhor + ' &nbsp;·&nbsp; <span class="of-escudos" title="Congeladores de ofensiva">' + icon("shield") + " ×" + eng.congeladores + "</span></div></div></div>" +
+      medalhas + '<div class="frase-dia">"' + esc(fraseDoDia()) + "\"</div></div>";
+    let risco = "";
+    if (!reg && !travado) risco = eng.ofensiva > 0
+      ? '<div class="of-risco">' + icon("flame") + " Sua ofensiva de <b>" + eng.ofensiva + "</b> dias está em risco — cumpra a missão de hoje!</div>"
+      : '<div class="of-risco">' + icon("flame") + " Comece sua ofensiva hoje — cumpra a primeira missão!</div>";
+
     root().innerHTML = topbar(u, "dashboard") + '<main class="main">' +
-      (travado ? '<div class="lock-note">' + icon("lock") + ' <span>Modo somente leitura — você já registrou hoje. Nenhuma tarefa pode ser feita até a virada do dia.</span> <a href="#dashboard">ver contagem →</a></div>' : "") +
+      (travado ? '<div class="lock-note">' + icon("lock") + ' <span>Modo somente leitura — você já registrou hoje. Nenhuma tarefa pode ser feita até a virada do dia.</span> <a href="#dashboard">ver contagem →</a></div>' : "") + risco +
       '<div class="page-head"><div><h1>Dia ' + dia + " de " + p.dias_totais + "</h1></div>" +
       '<div class="stat-row"><div class="stat-pill flame">' + icon("zap") + ' <span class="n">' + seq + '</span> seguidos</div>' +
       '<div class="stat-pill pts">' + icon("star") + ' <span class="n">' + p.pontos + '</span> pts</div></div></div>' +
+      ofensivaCard +
       '<div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%;"></div></div>' +
       '<div class="progress-meta"><span>' + cumpridas + " missões cumpridas</span><span>" + pct + "% da trilha</span></div></div>" +
       '<div class="acoes-card bloco">' + acoes + "</div>" +
@@ -453,11 +499,26 @@
 
   // ----------------------------- Travado -----------------------------
   function viewTravado(u) {
+    const p = planoAtivo(u.id);
+    const h = p ? historico(p.id) : [];
+    const dia = p ? diaAtual(p) : 0;
+    const eng = calcularEngajamento(h);
+    const antes = calcularEngajamento(h.filter(r => r.dia_numero !== dia));
+    const novos = eng.marcos.filter(m => !antes.marcos.includes(m));
+    const reg = p ? registroHoje(p.id, dia) : null;
+    const protegido = reg && reg.status === "falha" && eng.ofensiva === antes.ofensiva && eng.ofensiva > 0;
+
+    let feedback = '<div class="lock-ofensiva">' + icon("flame") + ' <b>' + eng.ofensiva + '</b> dias de ofensiva' +
+      (eng.congeladores ? ' <span class="lock-escudo">' + icon("shield") + " ×" + eng.congeladores + "</span>" : "") + "</div>";
+    if (novos.length) feedback += '<div class="lock-marco">' + icon("medal") + " Novo marco: <b>" + Math.max.apply(null, novos) + " dias</b>! 🎉</div>";
+    if (protegido) feedback += '<div class="lock-protegido">' + icon("shield") + " Congelador usado — sua ofensiva foi <b>protegida</b>!</div>";
+
     root().innerHTML = '<div class="lock-wrap"><div class="lock-card"><div class="icone">' + icon("lock") + "</div>" +
-      "<h1>Missão de hoje registrada</h1>" +
+      "<h1>Missão de hoje registrada</h1>" + feedback +
       "<p>Você já confirmou sua missão de hoje. Amanhã você pode continuar criando sua rotina e se habituando a executar uma tarefa todo dia.</p>" +
       '<div class="contagem" id="contagem">--:--:--</div>' +
       '<a href="#dashboard?ver=1" class="btn btn-outline" style="margin-top:20px;">' + icon("chart") + " Acompanhar andamento</a></div></div>";
+    if (novos.length) confeteRapido();
     const lim = u.locked_until;
     function upd() {
       let diff = Math.max(0, lim - Date.now());
@@ -496,6 +557,23 @@
       ctx.clearRect(0, 0, cv.width, cv.height);
       ps.forEach(p => { p.y += p.vy; p.x += p.vx; p.rot += p.vr; if (p.y > cv.height + 20) { p.y = -20; p.x = Math.random() * cv.width; } ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.c; ctx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r * .6); ctx.restore(); });
       if (t - t0 < 5500) requestAnimationFrame(tick); else ctx.clearRect(0, 0, cv.width, cv.height);
+    })(t0);
+  }
+
+  function confeteRapido() {
+    const cv = document.createElement("canvas");
+    cv.style.cssText = "position:fixed;inset:0;pointer-events:none;z-index:70";
+    document.body.appendChild(cv);
+    const ctx = cv.getContext("2d");
+    const rz = () => { cv.width = innerWidth; cv.height = innerHeight; }; rz(); addEventListener("resize", rz);
+    const cores = ["#FF6A1A", "#FFC13B", "#0EA5E9", "#3355FF", "#0E9E4B"];
+    const ps = Array.from({ length: 110 }, () => ({ x: Math.random() * innerWidth, y: Math.random() * -innerHeight, r: 5 + Math.random() * 6, c: cores[Math.floor(Math.random() * cores.length)], vy: 2.5 + Math.random() * 3, vx: -1.5 + Math.random() * 3, rot: Math.random() * Math.PI, vr: -.16 + Math.random() * .32 }));
+    const t0 = performance.now();
+    (function tick(t) {
+      ctx.clearRect(0, 0, cv.width, cv.height);
+      const fade = Math.max(0, 1 - Math.max(0, t - t0 - 3200) / 900);
+      ps.forEach(p => { p.y += p.vy; p.x += p.vx; p.rot += p.vr; ctx.save(); ctx.globalAlpha = fade; ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.c; ctx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r * .6); ctx.restore(); });
+      if (t - t0 < 4100) requestAnimationFrame(tick); else cv.remove();
     })(t0);
   }
 

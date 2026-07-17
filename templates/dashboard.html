@@ -11,6 +11,13 @@
 </div>
 {% endif %}
 
+{% if not registro_hoje and not travado %}
+<div class="of-risco">
+    {{ icon("flame") }}
+    {% if eng.ofensiva > 0 %}Sua ofensiva de <b>{{ eng.ofensiva }}</b> dias está em risco — cumpra a missão de hoje!{% else %}Comece sua ofensiva hoje — cumpra a primeira missão!{% endif %}
+</div>
+{% endif %}
+
 <div class="page-head">
     <div>
         <h1>Dia {{ dia_numero }} de {{ plano.dias_totais }}</h1>
@@ -19,6 +26,22 @@
         <div class="stat-pill flame">{{ icon("zap") }} <span class="n">{{ sequencia }}</span> seguidos</div>
         <div class="stat-pill pts">{{ icon("star") }} <span class="n">{{ plano.pontos }}</span> pts</div>
     </div>
+</div>
+
+<div class="ofensiva-card bloco">
+    <div class="of-hero">
+        <div class="of-flame">{{ icon("flame") }}<span class="of-num">{{ eng.ofensiva }}</span></div>
+        <div class="of-info">
+            <div class="of-label">dias de ofensiva</div>
+            <div class="of-meta">Melhor: {{ eng.melhor }} &nbsp;·&nbsp; <span class="of-escudos" title="Congeladores de ofensiva">{{ icon("shield") }} ×{{ eng.congeladores }}</span></div>
+        </div>
+    </div>
+    <div class="of-medalhas">
+        {% for m in [3, 7, 14, 30, 40] %}
+        <span class="medalha {{ 'ganha' if m in eng.marcos else 'bloqueada' }}" title="{{ m }} dias">{{ icon("medal") }}<b>{{ m }}</b></span>
+        {% endfor %}
+    </div>
+    <div class="frase-dia">"{{ frase_dia }}"</div>
 </div>
 
 <div class="progress-wrap">

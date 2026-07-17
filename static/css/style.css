@@ -232,7 +232,44 @@ input:focus { outline: none; border-color: var(--navy); box-shadow: 0 0 0 3px rg
 .sec-titulo .sub { margin-left: auto; font-size: .76rem; font-weight: 500; color: var(--ink-dim); }
 
 .bloco { margin-bottom: 22px; }
-.trilha-card, .acoes-card, .cal-card { padding: 22px 24px; }
+.trilha-card, .acoes-card, .cal-card, .ofensiva-card { padding: 22px 24px; }
+
+/* ============================ Engajamento (ofensiva / marcos / congeladores) === */
+.ofensiva-card { display: flex; flex-direction: column; gap: 14px; }
+.of-hero { display: flex; align-items: center; gap: 16px; }
+.of-flame { display: inline-flex; align-items: center; gap: 4px; }
+.of-flame .ico { width: 46px; height: 46px; color: #FF6A1A; fill: rgba(255,106,26,.14); filter: drop-shadow(0 2px 6px rgba(255,106,26,.35)); }
+.of-num { font-size: 2.4rem; font-weight: 900; letter-spacing: -1.5px; color: var(--ink); line-height: 1; }
+.of-info .of-label { font-weight: 700; color: var(--ink); font-size: .95rem; }
+.of-info .of-meta { font-size: .82rem; color: var(--ink-soft); margin-top: 3px; display: inline-flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.of-escudos { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; color: var(--blue); }
+.of-escudos .ico { width: 15px; height: 15px; }
+
+.of-medalhas { display: flex; gap: 10px; flex-wrap: wrap; }
+.medalha { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 999px; font-weight: 800; font-size: .8rem; border: 1px solid var(--line-2); }
+.medalha .ico { width: 16px; height: 16px; }
+.medalha.ganha { background: var(--blue-soft); color: var(--navy); border-color: transparent; }
+.medalha.ganha .ico { color: var(--gold); fill: rgba(198,137,15,.2); }
+.medalha.bloqueada { color: var(--ink-dim); opacity: .65; }
+.medalha.bloqueada .ico { color: var(--ink-dim); }
+
+.frase-dia { font-style: italic; color: var(--ink-soft); font-size: .9rem; border-top: 1px solid var(--line); padding-top: 12px; }
+
+.of-risco { display: flex; align-items: center; gap: 9px; margin-bottom: 16px; padding: 12px 16px; border-radius: var(--radius-sm);
+    background: var(--surface); border: 1px solid var(--line-2); border-left: 4px solid #FF6A1A; color: var(--ink); font-weight: 700; font-size: .9rem; }
+.of-risco .ico { width: 19px; height: 19px; color: #FF6A1A; fill: rgba(255,106,26,.15); flex: 0 0 auto; }
+
+/* feedback na tela de bloqueio */
+.lock-ofensiva { display: inline-flex; align-items: center; gap: 7px; justify-content: center; font-size: 1.05rem; font-weight: 800; color: var(--ink); margin-bottom: 8px; }
+.lock-ofensiva .ico { width: 22px; height: 22px; color: #FF6A1A; fill: rgba(255,106,26,.15); }
+.lock-ofensiva b { color: #FF6A1A; font-size: 1.2em; }
+.lock-escudo { color: var(--blue); display: inline-flex; align-items: center; gap: 3px; font-size: .85rem; }
+.lock-escudo .ico { width: 15px; height: 15px; }
+.lock-marco, .lock-protegido { display: inline-flex; align-items: center; gap: 7px; justify-content: center; font-weight: 700; font-size: .9rem; margin: 0 auto 8px; padding: 8px 14px; border-radius: 999px; }
+.lock-marco { background: var(--blue-soft); color: var(--navy); }
+.lock-marco .ico { color: var(--gold); width: 18px; height: 18px; }
+.lock-protegido { background: #E6F4FF; color: #0b5cad; }
+.lock-protegido .ico { width: 17px; height: 17px; }
 
 /* ============================ Card de ações (topo) ===================== */
 

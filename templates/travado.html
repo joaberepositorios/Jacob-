@@ -12,6 +12,13 @@
         <div class="lock-card">
             <div class="icone">{{ icon("lock", "ico") }}</div>
             <h1>Missão de hoje registrada</h1>
+            {% if eng %}
+            <div class="lock-ofensiva">{{ icon("flame") }} <b>{{ eng.ofensiva }}</b> dias de ofensiva
+                {% if eng.congeladores %}<span class="lock-escudo">{{ icon("shield") }} ×{{ eng.congeladores }}</span>{% endif %}
+            </div>
+            {% if novos_marcos %}<div class="lock-marco">{{ icon("medal") }} Novo marco: <b>{{ novos_marcos|max }} dias</b>! 🎉</div>{% endif %}
+            {% if protegido %}<div class="lock-protegido">{{ icon("shield") }} Congelador usado — sua ofensiva foi <b>protegida</b>!</div>{% endif %}
+            {% endif %}
             <p>Você já confirmou sua missão de hoje. Amanhã você pode continuar criando sua rotina e se habituando a executar uma tarefa todo dia.</p>
             <div class="contagem" id="contagem">--:--:--</div>
             <p style="font-size:.78rem;">Volte depois desse horário para ver o dia {{ limite.day }}.</p>
