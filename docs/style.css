@@ -137,6 +137,7 @@ a:hover { color: var(--blue); }
 /* Formulários */
 .field { margin-bottom: 15px; }
 .field label { display: block; font-size: .78rem; font-weight: 600; color: var(--ink-soft); margin-bottom: 6px; }
+.field input,
 input[type="number"], input[type="text"], input[type="email"], input[type="tel"], input[type="password"] {
     width: 100%; padding: 12px 14px;
     border-radius: var(--radius-sm);

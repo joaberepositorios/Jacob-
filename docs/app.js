@@ -178,8 +178,8 @@
       '<div class="eyebrow">Dia zero da sua trilha</div><h1>Criar conta</h1>' +
       '<p class="desc">40 dias de constância começam com um cadastro de 1 minuto.</p>' +
       flashHTML() +
-      '<form id="f"><div class="field"><label>Nome completo</label><input id="nome" required></div>' +
-      '<div class="row-2"><div class="field"><label>Telefone</label><input id="numero" required></div>' +
+      '<form id="f"><div class="field"><label>Nome completo</label><input type="text" id="nome" required></div>' +
+      '<div class="row-2"><div class="field"><label>Telefone</label><input type="tel" id="numero" required></div>' +
       '<div class="field"><label>Idade</label><input type="number" id="idade" min="10" max="120" required></div></div>' +
       '<div class="field"><label>E-mail</label><input type="email" id="email" required></div>' +
       '<div class="row-2"><div class="field"><label>Senha</label><input type="password" id="senha" required></div>' +
