@@ -1,4 +1,5 @@
-# Dependências para rodar como serviço web (Render/PythonAnywhere).
+# Dependências para rodar como serviço web (Render + Supabase).
 # NÃO inclui pywebview/pyinstaller (são só para o .exe desktop).
 Flask==3.1.3
 gunicorn==23.0.0
+psycopg[binary]>=3.2,<4     # driver PostgreSQL (usado quando DATABASE_URL está setada)

@@ -37,22 +37,32 @@
     <script>
         const TOTAL = {{ total_segundos }};   // tempo por dia (min) em segundos
         const CIRC  = 578;                     // 2 * pi * r (r=92)
-        let restante = TOTAL;
-        let rodando = true;
+        const KEY   = 'ht_timer_{{ plano.id }}_{{ dia_numero }}';
 
         const relogio = document.getElementById('relogio');
         const rotulo  = document.getElementById('rotulo');
         const prog    = document.getElementById('prog');
         const btn     = document.getElementById('btnPausar');
 
+        function carregar() { try { return JSON.parse(localStorage.getItem(KEY)); } catch (e) { return null; } }
+        function salvar()   { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
+
+        // Estado persistido (relógio): rodando -> {fim}; pausado -> {pausado, restante}.
+        // Ao iniciar guarda o horário de término, então o timer segue mesmo se sair e voltar.
+        let st = carregar();
+        if (!st) { st = { fim: Date.now() + TOTAL * 1000, pausado: false, restante: TOTAL, done: false }; salvar(); }
+
+        function restanteAtual() {
+            if (st.pausado) return st.restante;
+            return Math.max(0, Math.round((st.fim - Date.now()) / 1000));
+        }
         function fmt(s) {
-            const m = String(Math.floor(s / 60)).padStart(2, '0');
-            const ss = String(s % 60).padStart(2, '0');
-            return `${m}:${ss}`;
+            return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
         }
         function pintar() {
-            relogio.textContent = fmt(restante);
-            const frac = TOTAL > 0 ? restante / TOTAL : 0;
+            const r = restanteAtual();
+            relogio.textContent = fmt(r);
+            const frac = TOTAL > 0 ? r / TOTAL : 0;
             prog.style.strokeDashoffset = (CIRC * (1 - frac)).toFixed(1);
         }
         function tocar() {
@@ -67,30 +77,26 @@
                 o.start(); o.stop(ctx.currentTime + 1.2);
             } catch (e) {}
         }
-        function concluir() {
-            rodando = false;
-            relogio.textContent = "00:00";
-            rotulo.textContent = "tempo cumprido";
-            btn.disabled = true;
-            btn.style.opacity = .55;
-            tocar();
+        function checarFim() {
+            if (!st.pausado && restanteAtual() <= 0) {
+                rotulo.textContent = 'tempo cumprido';
+                btn.disabled = true; btn.style.opacity = .55;
+                if (!st.done) { st.done = true; salvar(); tocar(); }
+            }
+        }
+        function rotuloBtn() {
+            btn.innerHTML = btn.innerHTML.replace(/Pausar|Retomar/, st.pausado ? 'Retomar' : 'Pausar');
         }
 
         btn.addEventListener('click', () => {
             if (btn.disabled) return;
-            rodando = !rodando;
-            btn.innerHTML = rodando
-                ? btn.innerHTML.replace('Retomar', 'Pausar')
-                : btn.innerHTML.replace('Pausar', 'Retomar');
+            if (st.pausado) { st.pausado = false; st.fim = Date.now() + st.restante * 1000; }
+            else { st.pausado = true; st.restante = restanteAtual(); }
+            salvar(); rotuloBtn(); pintar();
         });
 
-        pintar();
-        setInterval(() => {
-            if (!rodando || restante <= 0) return;
-            restante--;
-            pintar();
-            if (restante <= 0) concluir();
-        }, 1000);
+        rotuloBtn(); pintar(); checarFim();
+        setInterval(() => { pintar(); checarFim(); }, 500);
     </script>
 </body>
 </html>

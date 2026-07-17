@@ -55,8 +55,14 @@ Passo a passo:
 
 Observações do plano grátis:
 - O serviço **hiberna** após inatividade; a primeira visita pode levar ~30s para acordar.
-- O banco `habitrilha.db` fica em disco **efêmero** — os dados **zeram** a cada
-  redeploy/reinício. Serve para testar o sistema, não para uso definitivo.
+- Sem banco externo, o SQLite fica em disco **efêmero** — os dados **zeram** a cada
+  redeploy. Para **persistência**, use o Supabase (Postgres): veja [SUPABASE.md](SUPABASE.md).
+
+### Dados persistentes com Supabase
+
+O app tem backend duplo: com a variável `DATABASE_URL` definida, ele usa **PostgreSQL
+(Supabase)** em vez de SQLite — sem mudar nenhuma outra parte do código. Passo a passo
+completo em **[SUPABASE.md](SUPABASE.md)**.
 
 ## Gerando o .exe (fazer isso dentro do Windows)
 

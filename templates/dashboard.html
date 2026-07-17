@@ -66,6 +66,10 @@
         <div class="missao-icone">{{ cat_icon(plano.categoria, "ico") }}</div>
         <div class="missao">Missão do dia {{ dia_numero }}</div>
         <div class="missao-detalhe">{{ plano.tempo_por_dia_min }} minutos de "{{ plano.categoria }}", {{ plano.vezes_por_dia }}x hoje.</div>
+        <div id="tarefa-andamento" class="timer-chip" style="display:none;">
+            {{ icon("clock") }} <span>Tarefa em andamento — <b id="ta-rest">--:--</b></span>
+            <a href="{{ url_for('foco') }}">voltar ao foco →</a>
+        </div>
         <div class="acoes-botoes">
             <a href="{{ url_for('foco') }}" class="btn btn-primary">{{ icon("play") }} Iniciar tarefa</a>
             <form method="POST" action="{{ url_for('registrar_acao', tipo='cumprida') }}" onsubmit="return confirm('Confirmar que a missão de hoje foi cumprida? O app vai travar até 00:00.');">
@@ -300,6 +304,24 @@
         else cv.remove();
     }
     requestAnimationFrame(frame);
+})();
+
+// Indicador "tarefa em andamento" — lê o mesmo timer persistido do foco.
+(function () {
+    const el = document.getElementById('tarefa-andamento');
+    if (!el) return;
+    const KEY = 'ht_timer_{{ plano.id }}_{{ dia_numero }}';
+    const out = document.getElementById('ta-rest');
+    const fmt = s => String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+    function tick() {
+        let st; try { st = JSON.parse(localStorage.getItem(KEY)); } catch (e) { st = null; }
+        if (!st) { el.style.display = 'none'; return; }
+        const r = st.pausado ? st.restante : Math.max(0, Math.round((st.fim - Date.now()) / 1000));
+        el.style.display = 'flex';
+        out.textContent = r > 0 ? fmt(r) + (st.pausado ? ' (pausado)' : '') : 'tempo cumprido';
+    }
+    tick();
+    setInterval(tick, 1000);
 })();
 </script>
 {% endblock %}

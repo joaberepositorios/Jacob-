@@ -243,6 +243,17 @@ input:focus { outline: none; border-color: var(--navy); box-shadow: 0 0 0 3px rg
 .missao-icone .ico { width: 28px; height: 28px; }
 .missao { font-size: 1.15rem; font-weight: 700; }
 .missao-detalhe { color: var(--ink-soft); font-size: .9rem; margin: 6px 0 20px; }
+.timer-chip {
+    display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+    max-width: 420px; margin: 0 auto 16px;
+    padding: 10px 16px; border-radius: 999px;
+    background: var(--blue-soft); border: 1px solid var(--line-2);
+    color: var(--navy); font-weight: 700; font-size: .88rem;
+}
+.timer-chip .ico { width: 17px; height: 17px; color: var(--blue); }
+.timer-chip b { font-variant-numeric: tabular-nums; }
+.timer-chip a { font-weight: 700; }
+
 .acoes-botoes { display: flex; flex-direction: column; gap: 10px; max-width: 380px; margin: 0 auto; }
 .acoes-secundarias { max-width: 380px; margin: 10px auto 0; }
 
