@@ -39,6 +39,25 @@ python executar.py
 
 Isso já abre numa janela própria (sem navegador visível), do jeito que o `.exe` final vai se comportar.
 
+## Testar online (deploy web no Render)
+
+O app é Flask (servidor), então **não roda no GitHub Pages** (que só serve arquivos
+estáticos). Para uma versão testável na internet, use o [Render](https://render.com)
+(plano grátis). O repositório já traz `render.yaml`, `Procfile` e `requirements-web.txt`.
+
+Passo a passo:
+
+1. Crie/entre numa conta em https://render.com (login com GitHub).
+2. **New → Blueprint** e selecione o repositório `Jacob-`.
+3. O Render lê o `render.yaml` sozinho (build, start e a `SECRET_KEY` gerada
+   automaticamente). Clique em **Apply**.
+4. Em ~2 min sai uma URL pública `https://habitrilha.onrender.com` para testar.
+
+Observações do plano grátis:
+- O serviço **hiberna** após inatividade; a primeira visita pode levar ~30s para acordar.
+- O banco `habitrilha.db` fica em disco **efêmero** — os dados **zeram** a cada
+  redeploy/reinício. Serve para testar o sistema, não para uso definitivo.
+
 ## Gerando o .exe (fazer isso dentro do Windows)
 
 O PyInstaller empacota para o sistema operacional em que ele roda — então, para gerar

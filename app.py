@@ -28,7 +28,7 @@ app = Flask(
     template_folder=caminho_recurso("templates"),
     static_folder=caminho_recurso("static"),
 )
-app.secret_key = "troque-esta-chave-antes-de-distribuir"  # ver README para gerar uma chave segura
+app.secret_key = os.environ.get("SECRET_KEY", "dev-inseguro-troque-em-producao")  # em produção use a env SECRET_KEY
 
 db.iniciar_banco()
 

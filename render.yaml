@@ -1,0 +1,14 @@
+# Blueprint do Render — permite deploy "1-clique" apontando para este repositório.
+# No Render: New > Blueprint > conecte este repo. Ele lê este arquivo.
+services:
+  - type: web
+    name: habitrilha
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements-web.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true      # o Render gera uma chave secreta forte automaticamente
+      - key: PYTHON_VERSION
+        value: 3.12.6
