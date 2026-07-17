@@ -1,5 +1,5 @@
 /* ==========================================================================
-   HabiTrilha — design minimalista claro
+   Habpt — design minimalista claro
    Branco + azul-escuro + preto. Superfícies planas, sem brilho/glow.
    Ícones SVG (ver _icons.html). Fontes de sistema (offline no .exe).
    ========================================================================== */
@@ -130,7 +130,7 @@ a:hover { color: var(--blue); }
 
 /* Marca: a letra "J" (logo + título) */
 .marca-j { display: inline-flex; align-items: center; line-height: 1; }
-.marca-j .mj-letra { font-size: 2.1rem; font-weight: 900; color: var(--navy); letter-spacing: -1.5px; }
+.marca-j .mj-letra { font-size: 1.7rem; font-weight: 900; color: var(--navy); letter-spacing: -.5px; }
 /* Versão compacta na sidebar */
 .sidebar .brand .marca-j .mj-letra { font-size: 1.7rem; }
 

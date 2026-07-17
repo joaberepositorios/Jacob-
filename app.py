@@ -1,5 +1,5 @@
 """
-HabiTrilha - aplicativo desktop de produtividade e formação de hábitos.
+Habpt - aplicativo desktop de produtividade e formação de hábitos.
 Backend Flask. Roda tanto em modo navegador (debug) quanto embutido numa janela
 nativa via pywebview (ver executar.py), gerando um .exe autocontido com PyInstaller.
 """

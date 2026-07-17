@@ -1,4 +1,4 @@
-# HabiTrilha
+# Habpt
 
 App desktop de produtividade e formação de hábitos: o usuário se cadastra, monta um
 planejamento (categoria, tempo por dia, vezes por dia) e recebe uma trilha de **40 dias
@@ -80,10 +80,10 @@ python build_exe.py
 O executável final fica em:
 
 ```
-dist\HabiTrilha\HabiTrilha.exe
+dist\Habpt\Habpt.exe
 ```
 
-Copie a pasta `dist\HabiTrilha` inteira para distribuir o app — o `.exe` precisa dos
+Copie a pasta `dist\Habpt` inteira para distribuir o app — o `.exe` precisa dos
 outros arquivos que ficam ao lado dele nessa pasta (é o modo `--onedir`, que abre mais
 rápido que `--onefile`). Se preferir um único arquivo `.exe` grande, troque
 `--onedir` por `--onefile` em `build_exe.py`.

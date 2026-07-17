@@ -1,5 +1,5 @@
 """
-Camada de acesso a dados do HabiTrilha.
+Camada de acesso a dados do Habpt.
 
 Backend duplo (mesma API para o app.py):
 - Se a variável de ambiente DATABASE_URL existir  -> PostgreSQL (Supabase).
