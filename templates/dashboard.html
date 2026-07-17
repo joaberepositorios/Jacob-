@@ -101,7 +101,7 @@
         </div>
         <div class="acoes-secundarias">
             <form method="POST" action="{{ url_for('registrar_acao', tipo='falha') }}" onsubmit="return confirm('Desistir da missão de hoje? Você perde 1 ponto e o app trava até 00:00.');">
-                <button type="submit" class="btn btn-outline">{{ icon("x") }} Desistir de hoje</button>
+                <button type="submit" class="btn btn-brick">{{ icon("x") }} Desistir de hoje</button>
             </form>
         </div>
     {% else %}

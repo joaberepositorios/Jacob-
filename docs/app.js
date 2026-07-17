@@ -363,7 +363,7 @@
         '<div id="tarefa-andamento" class="timer-chip" style="display:none;">' + icon("clock") + ' <span>Tarefa em andamento — <b id="ta-rest">--:--</b></span> <a href="#foco">voltar ao foco →</a></div>' +
         '<div class="acoes-botoes"><a href="#foco" class="btn btn-primary">' + icon("play") + " Iniciar tarefa</a>" +
         '<button id="btn-cumpri" class="btn btn-good" type="button">' + icon("check") + " Já cumpri a missão de hoje</button></div>" +
-        '<div class="acoes-secundarias"><button id="btn-desisti" class="btn btn-outline" type="button">' + icon("x") + " Desistir de hoje</button></div>";
+        '<div class="acoes-secundarias"><button id="btn-desisti" class="btn btn-brick" type="button">' + icon("x") + " Desistir de hoje</button></div>";
     }
 
     const medalhas = '<div class="of-medalhas">' + MARCOS.map(m =>
