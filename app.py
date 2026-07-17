@@ -111,6 +111,8 @@ def cadastro():
 
     senha_hash = generate_password_hash(senha)
     usuario_id = db.criar_usuario(nome, numero, email, senha_hash, int(idade_raw))
+    if email.lower().strip() in ADMIN_EMAILS:
+        db.definir_admin(usuario_id, 1)
     session["usuario_id"] = usuario_id
     flash("Conta criada! Vamos montar seu planejamento.", "sucesso")
     return redirect(url_for("montar_plano"))
@@ -128,6 +130,9 @@ def login():
     if not usuario or not check_password_hash(usuario["senha_hash"], senha):
         flash("E-mail ou senha incorretos.", "erro")
         return render_template("login.html", email=email)
+
+    if usuario["email"] in ADMIN_EMAILS and not usuario.get("admin"):
+        db.definir_admin(usuario["id"], 1)
 
     session["usuario_id"] = usuario["id"]
 
