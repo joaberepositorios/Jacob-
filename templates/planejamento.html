@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Montar planejamento · HabiTrilha</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+{% from "_icons.html" import icon, cat_icon %}
+<body>
+    <div class="plano-wrap">
+        <div class="plano-card">
+            <div class="brand-mark"><span class="logo">{{ icon("map") }}</span> Habi<span class="dot">Trilha</span></div>
+            <div class="eyebrow">Primeiro acesso</div>
+            <h1>Monte seu planejamento</h1>
+            <p class="desc">
+                Escolha uma área para praticar todos os dias, sem pular nenhum, por 40 dias seguidos.
+                Essa escolha vira sua trilha — dá pra acompanhar o progresso dia a dia no painel.
+            </p>
+
+            {% with mensagens = get_flashed_messages(with_categories=true) %}
+                {% if mensagens %}
+                <div class="flash-list">
+                    {% for categoria, msg in mensagens %}
+                        <div class="flash {{ categoria }}">{{ msg }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('montar_plano') }}">
+                <label class="eyebrow">Em que você quer ser produtivo?</label>
+                <div class="chip-grid">
+                    {% for cat in categorias %}
+                    <label class="chip">
+                        <input type="radio" name="categoria" value="{{ cat }}" {{ 'checked' if loop.first else '' }}>
+                        {{ cat_icon(cat) }} {{ cat }}
+                    </label>
+                    {% endfor %}
+                </div>
+
+                <div class="row-2">
+                    <div class="field">
+                        <label for="tempo_por_dia">Tempo por dia (minutos)</label>
+                        <input type="number" id="tempo_por_dia" name="tempo_por_dia" min="1" value="30" required>
+                    </div>
+                    <div class="field">
+                        <label for="vezes_por_dia">Vezes ao dia</label>
+                        <input type="number" id="vezes_por_dia" name="vezes_por_dia" min="1" value="1" required>
+                        <div class="hint">Quantas sessões dessa atividade por dia.</div>
+                    </div>
+                </div>
+
+                <div class="hint" style="margin-bottom:18px;">
+                    A trilha roda todos os dias, de segunda a segunda, por 40 dias seguidos, começando hoje.
+                </div>
+
+                <button type="submit" class="btn btn-primary">{{ icon("play") }} Começar minha trilha de 40 dias</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

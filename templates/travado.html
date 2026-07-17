@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App travado · HabiTrilha</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+{% from "_icons.html" import icon %}
+<body>
+    <div class="lock-wrap">
+        <div class="lock-card">
+            <div class="icone">{{ icon("lock", "ico") }}</div>
+            <h1>Missão de hoje registrada</h1>
+            <p>Você já confirmou sua missão de hoje. O HabiTrilha fica bloqueado até a virada do dia para manter a constância — sem reabrir o app para "compensar" ou desfazer.</p>
+            <div class="contagem" id="contagem">--:--:--</div>
+            <p style="font-size:.78rem;">Volte depois desse horário para ver o dia {{ limite.day }}.</p>
+        </div>
+    </div>
+    <script>
+        const limite = new Date("{{ limite.isoformat() }}");
+        function atualizar() {
+            const agora = new Date();
+            let diff = Math.max(0, limite - agora);
+            const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
+            const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+            const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+            document.getElementById('contagem').textContent = `${h}:${m}:${s}`;
+            if (diff <= 0) { window.location.reload(); }
+        }
+        atualizar();
+        setInterval(atualizar, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foco · HabiTrilha</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+{% from "_icons.html" import icon %}
+<body>
+    <div class="foco-wrap">
+        <div class="foco-card">
+            <div class="brand-mark" style="justify-content:center;"><span class="logo">{{ icon("map") }}</span> Habi<span class="dot">Trilha</span></div>
+            <div class="foco-titulo">{{ icon("target") }} Foco na missão</div>
+            <div class="foco-sub">{{ plano.categoria }} · dia {{ dia_numero }} · {{ plano.vezes_por_dia }}x hoje</div>
+
+            <div class="timer-ring">
+                <svg width="210" height="210" viewBox="0 0 210 210">
+                    <circle class="track" cx="105" cy="105" r="92" fill="none" stroke-width="14"/>
+                    <circle id="prog" class="prog" cx="105" cy="105" r="92" fill="none" stroke-width="14"
+                            stroke-dasharray="578" stroke-dashoffset="0"/>
+                </svg>
+                <div class="timer-num"><span id="relogio">00:00</span><small id="rotulo">restante</small></div>
+            </div>
+
+            <div class="foco-acoes">
+                <button id="btnPausar" class="btn btn-primary">{{ icon("pause") }} Pausar</button>
+                <form id="formCumprir" method="POST" action="{{ url_for('registrar_acao', tipo='cumprida') }}"
+                      onsubmit="return confirm('Confirmar que a missão de hoje foi cumprida? O app vai travar até 00:00.');">
+                    <button type="submit" class="btn btn-good">{{ icon("check") }} Concluí a missão</button>
+                </form>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-ghost">Voltar ao painel</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const TOTAL = {{ total_segundos }};   // tempo por dia (min) em segundos
+        const CIRC  = 578;                     // 2 * pi * r (r=92)
+        let restante = TOTAL;
+        let rodando = true;
+
+        const relogio = document.getElementById('relogio');
+        const rotulo  = document.getElementById('rotulo');
+        const prog    = document.getElementById('prog');
+        const btn     = document.getElementById('btnPausar');
+
+        function fmt(s) {
+            const m = String(Math.floor(s / 60)).padStart(2, '0');
+            const ss = String(s % 60).padStart(2, '0');
+            return `${m}:${ss}`;
+        }
+        function pintar() {
+            relogio.textContent = fmt(restante);
+            const frac = TOTAL > 0 ? restante / TOTAL : 0;
+            prog.style.strokeDashoffset = (CIRC * (1 - frac)).toFixed(1);
+        }
+        function tocar() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const o = ctx.createOscillator(), g = ctx.createGain();
+                o.connect(g); g.connect(ctx.destination);
+                o.type = 'sine'; o.frequency.value = 660;
+                g.gain.setValueAtTime(0.001, ctx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + 0.05);
+                g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
+                o.start(); o.stop(ctx.currentTime + 1.2);
+            } catch (e) {}
+        }
+        function concluir() {
+            rodando = false;
+            relogio.textContent = "00:00";
+            rotulo.textContent = "tempo cumprido";
+            btn.disabled = true;
+            btn.style.opacity = .55;
+            tocar();
+        }
+
+        btn.addEventListener('click', () => {
+            if (btn.disabled) return;
+            rodando = !rodando;
+            btn.innerHTML = rodando
+                ? btn.innerHTML.replace('Retomar', 'Pausar')
+                : btn.innerHTML.replace('Pausar', 'Retomar');
+        });
+
+        pintar();
+        setInterval(() => {
+            if (!rodando || restante <= 0) return;
+            restante--;
+            pintar();
+            if (restante <= 0) concluir();
+        }, 1000);
+    </script>
+</body>
+</html>

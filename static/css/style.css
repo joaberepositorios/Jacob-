@@ -1,0 +1,395 @@
+/* ==========================================================================
+   HabiTrilha — design minimalista claro
+   Branco + azul-escuro + preto. Superfícies planas, sem brilho/glow.
+   Ícones SVG (ver _icons.html). Fontes de sistema (offline no .exe).
+   ========================================================================== */
+
+:root {
+    --bg:        #F4F6FA;   /* fundo do app */
+    --surface:   #FFFFFF;   /* cards */
+    --surface-2: #FAFBFD;
+
+    --ink:       #0C1730;   /* texto principal (quase preto) */
+    --ink-soft:  #59637A;
+    --ink-dim:   #9AA3B4;
+
+    --navy:      #12305F;   /* azul-escuro primário */
+    --navy-2:    #1C4489;
+    --blue:      #2F6BFF;
+    --blue-soft: #E9F0FF;
+
+    --good:      #1F9D57;
+    --good-bg:   #E9F7EF;
+    --bad:       #D4495F;
+    --bad-bg:    #FCECEF;
+    --amber:     #E0A500;   /* dia de hoje */
+    --gold:      #C9A227;   /* tesouro */
+
+    --line:      #E6EAF1;
+    --line-2:    #D5DCE7;
+
+    --radius:    16px;
+    --radius-sm: 12px;
+    --font:      "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, "Inter",
+                 "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+
+body {
+    font-family: var(--font);
+    color: var(--ink);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+}
+
+h1 { font-size: 1.55rem; font-weight: 700; letter-spacing: -.4px; line-height: 1.15; }
+h3 { font-size: 1rem; font-weight: 650; }
+a  { color: var(--navy-2); text-decoration: none; }
+a:hover { color: var(--blue); }
+
+.eyebrow {
+    display: inline-flex; align-items: center; gap: 7px;
+    text-transform: uppercase;
+    font-size: .68rem; font-weight: 700; letter-spacing: 1.4px;
+    color: var(--ink-soft); margin-bottom: 8px;
+}
+
+/* Ícones */
+.ico { width: 20px; height: 20px; flex: 0 0 auto; vertical-align: middle; }
+.ico-sm { width: 16px; height: 16px; }
+.ico-lg { width: 28px; height: 28px; }
+
+/* ============================ Botões (flat, sem glow) ==================== */
+
+.btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+    width: 100%;
+    padding: 13px 20px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    background: var(--navy);
+    color: #fff;
+    font-family: inherit; font-size: .95rem; font-weight: 650;
+    letter-spacing: .1px; cursor: pointer;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
+    user-select: none;
+}
+.btn:hover { background: var(--navy-2); }
+.btn:active { transform: translateY(1px); }
+.btn .ico { width: 18px; height: 18px; }
+
+.btn-primary { background: var(--navy); }
+.btn-primary:hover { background: var(--navy-2); }
+
+.btn-good  { background: var(--good); }
+.btn-good:hover  { background: #1b8a4c; }
+.btn-brick { background: var(--bad); }
+.btn-brick:hover { background: #bf3d52; }
+
+.btn-outline {
+    background: var(--surface); color: var(--navy);
+    border-color: var(--line-2);
+}
+.btn-outline:hover { background: var(--surface-2); border-color: var(--navy); color: var(--navy); }
+
+.btn-ghost {
+    background: transparent; color: var(--ink-soft); border-color: var(--line-2);
+}
+.btn-ghost:hover { color: var(--ink); border-color: var(--ink-dim); }
+
+/* ============================ Telas centradas =========================== */
+
+.auth-wrap, .plano-wrap, .lock-wrap, .foco-wrap {
+    min-height: 100vh; display: grid; place-items: center; padding: 32px 18px;
+}
+
+.card, .auth-card, .plano-card, .foco-card, .lock-card,
+.trilha-card, .acoes-card, .tabela-card, .cal-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+}
+
+.auth-card { width: 100%; max-width: 410px; padding: 36px 32px; animation: fade .35s ease both; }
+.auth-card h1 { margin-bottom: 4px; }
+
+/* Marca */
+.brand-mark { display: inline-flex; align-items: center; gap: 9px; font-weight: 750; font-size: 1.1rem; letter-spacing: -.3px; margin-bottom: 22px; color: var(--ink); }
+.brand-mark .logo, .sidebar .brand .logo {
+    width: 34px; height: 34px; border-radius: 9px;
+    display: grid; place-items: center; color: #fff; background: var(--navy);
+}
+.brand-mark .logo .ico, .sidebar .brand .logo .ico { width: 19px; height: 19px; }
+.brand-mark .dot, .sidebar .brand .dot { color: var(--navy-2); }
+
+/* Formulários */
+.field { margin-bottom: 15px; }
+.field label { display: block; font-size: .78rem; font-weight: 600; color: var(--ink-soft); margin-bottom: 6px; }
+input[type="number"], input[type="text"], input[type="email"], input[type="tel"], input[type="password"] {
+    width: 100%; padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--line-2);
+    background: var(--surface); color: var(--ink);
+    font-family: inherit; font-size: .95rem;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+input:focus { outline: none; border-color: var(--navy); box-shadow: 0 0 0 3px rgba(18,48,95,.10); }
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.auth-card .btn { margin-top: 6px; }
+.auth-switch { margin-top: 18px; text-align: center; font-size: .9rem; color: var(--ink-soft); }
+.hint { font-size: .74rem; color: var(--ink-dim); margin-top: 6px; }
+.desc { color: var(--ink-soft); font-size: .9rem; margin: 6px 0 20px; }
+
+/* ============================ App shell ================================= */
+
+.app-shell { display: grid; grid-template-columns: 244px 1fr; min-height: 100vh; }
+.sidebar {
+    background: var(--surface); border-right: 1px solid var(--line);
+    padding: 24px 18px; display: flex; flex-direction: column; gap: 6px;
+}
+.sidebar .brand { display: flex; align-items: center; gap: 9px; font-weight: 750; font-size: 1.15rem; letter-spacing: -.4px; margin-bottom: 22px; }
+.sidebar nav { display: flex; flex-direction: column; gap: 4px; }
+.sidebar nav a {
+    display: flex; align-items: center; gap: 11px;
+    padding: 11px 13px; border-radius: var(--radius-sm);
+    color: var(--ink-soft); font-weight: 600; font-size: .92rem;
+    transition: background .15s ease, color .15s ease;
+}
+.sidebar nav a:hover { background: var(--surface-2); color: var(--ink); }
+.sidebar nav a.active { background: var(--blue-soft); color: var(--navy); }
+.sidebar nav a .ico { width: 18px; height: 18px; }
+
+.user-card { margin-top: auto; border-top: 1px solid var(--line); padding-top: 16px; font-size: .78rem; color: var(--ink-soft); }
+.user-card .avatar {
+    width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center;
+    color: var(--navy); background: var(--blue-soft); margin-bottom: 10px;
+}
+.user-card .avatar .ico { width: 20px; height: 20px; }
+.user-card .nome { color: var(--ink); font-weight: 700; font-size: .92rem; }
+.user-card a { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; font-weight: 600; }
+.user-card a .ico { width: 15px; height: 15px; }
+
+.main { padding: 30px 38px; max-width: 900px; animation: fade .3s ease both; }
+
+/* ============================ Cabeçalho ================================ */
+
+.page-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
+.stat-row { display: flex; gap: 10px; }
+.stat-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius-sm); padding: 9px 13px;
+    font-weight: 600; font-size: .78rem; color: var(--ink-soft);
+}
+.stat-pill .ico { width: 17px; height: 17px; color: var(--ink-dim); }
+.stat-pill .n { font-size: 1.05rem; font-weight: 750; color: var(--ink); }
+.stat-pill.flame .ico { color: var(--amber); }
+.stat-pill.pts .ico { color: var(--navy-2); }
+
+/* Título de seção */
+.sec-titulo { display: flex; align-items: center; gap: 9px; font-size: 1rem; font-weight: 700; color: var(--ink); margin-bottom: 14px; }
+.sec-titulo .ico { width: 19px; height: 19px; color: var(--navy-2); }
+.sec-titulo .sub { margin-left: auto; font-size: .76rem; font-weight: 500; color: var(--ink-dim); }
+
+.bloco { margin-bottom: 22px; }
+.trilha-card, .acoes-card, .cal-card { padding: 22px 24px; }
+
+/* ============================ Card de ações (topo) ===================== */
+
+.acoes-card { text-align: center; }
+.missao-icone {
+    width: 56px; height: 56px; margin: 0 auto 12px; border-radius: 14px;
+    display: grid; place-items: center; color: var(--navy); background: var(--blue-soft);
+}
+.missao-icone .ico { width: 28px; height: 28px; }
+.missao { font-size: 1.15rem; font-weight: 700; }
+.missao-detalhe { color: var(--ink-soft); font-size: .9rem; margin: 6px 0 20px; }
+.acoes-botoes { display: flex; flex-direction: column; gap: 10px; max-width: 380px; margin: 0 auto; }
+.acoes-secundarias { max-width: 380px; margin: 10px auto 0; }
+
+.status-feito {
+    display: flex; align-items: center; gap: 13px; text-align: left;
+    background: var(--good-bg); border: 1px solid #CDEBD9;
+    border-radius: var(--radius-sm); padding: 16px 18px;
+    color: var(--ink); font-size: .92rem;
+}
+.status-feito.falhou { background: var(--bad-bg); border-color: #F3D2D8; }
+.status-feito .badge { width: 34px; height: 34px; flex: 0 0 auto; border-radius: 9px; display: grid; place-items: center; color: #fff; background: var(--good); }
+.status-feito.falhou .badge { background: var(--bad); }
+.status-feito .badge .ico { width: 20px; height: 20px; }
+
+/* ============================ Calendário =============================== */
+
+.cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.cal-mes { font-weight: 700; font-size: .95rem; text-transform: capitalize; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+.cal-dow { text-align: center; font-size: .66rem; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: var(--ink-dim); padding-bottom: 4px; }
+.cal-cel {
+    aspect-ratio: 1 / 1; display: grid; place-items: center; position: relative;
+    border-radius: 9px; font-size: .82rem; font-weight: 600; color: var(--ink-soft);
+    border: 1px solid transparent;
+}
+.cal-cel.fora { color: var(--ink-dim); opacity: .45; }
+.cal-cel.plano { border-color: var(--line-2); color: var(--ink); }
+.cal-cel.cumprida { background: var(--good); color: #fff; border-color: transparent; }
+.cal-cel.falha { background: var(--bad-bg); color: var(--bad); border-color: #F3D2D8; }
+.cal-cel.futuro { border-style: dashed; border-color: var(--line-2); color: var(--ink-soft); }
+.cal-cel.hoje { border: 2px solid var(--amber); color: var(--ink); font-weight: 750; }
+.cal-legenda { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); font-size: .74rem; color: var(--ink-soft); }
+.cal-legenda span { display: inline-flex; align-items: center; gap: 6px; }
+.legenda-dot { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+
+/* ============================ Trilha do tesouro (serpentina) =========== */
+
+.tesouro { position: relative; padding: 18px 0 8px; }
+.tesouro::before {
+    content: ""; position: absolute; top: 26px; bottom: 40px; left: 50%;
+    width: 0; border-left: 2px dashed var(--line-2); transform: translateX(-50%);
+}
+.tesouro-nós { position: relative; display: flex; flex-direction: column; align-items: center; gap: 22px; }
+
+/* Círculos maiores. Cores sólidas — sem gradiente, sem brilho. */
+.marco {
+    position: relative; z-index: 1; left: 0;
+    width: 58px; height: 58px; border-radius: 50%;
+    display: grid; place-items: center;
+    font-weight: 700; font-size: 1rem; color: var(--ink-soft);
+    background: #fff; border: 2px solid var(--line-2);
+    animation: node-in .45s cubic-bezier(.2,.9,.3,1.35) both;
+    animation-delay: calc(var(--i, 0) * 45ms);
+    transition: transform .12s ease;
+}
+.marco:hover { transform: scale(1.09); z-index: 2; }
+
+/* Serpentina: desloca cada nó em onda (período 8) — usa `left`, não `transform` */
+.marco:nth-child(8n+2){ left: 66px; }
+.marco:nth-child(8n+3){ left: 104px; }
+.marco:nth-child(8n+4){ left: 66px; }
+.marco:nth-child(8n+6){ left: -66px; }
+.marco:nth-child(8n+7){ left: -104px; }
+.marco:nth-child(8n+0){ left: -66px; }
+
+/* Dias concluídos = preenchidos (verde sólido). */
+.marco.cumprida { background: var(--good); color: #fff; border-color: var(--good); }
+.marco.falha { background: #fff; color: var(--bad); border-color: var(--bad); border-style: dashed; }
+.marco.futuro { background: #fff; color: var(--ink-dim); border-style: dashed; }
+/* Hoje = contorno âmbar sólido + animação de movimento (pulo), sem luz. */
+.marco.hoje {
+    background: #fff; color: var(--ink); border: 3px solid var(--amber); font-weight: 800;
+    animation: bob 1.6s ease-in-out infinite;
+}
+.marco.tesouro-fim { width: 68px; height: 68px; border: 2px solid var(--gold); color: var(--gold); background: #FBF6E7; }
+.marco.tesouro-fim .ico { width: 32px; height: 32px; }
+.marco.tesouro-fim.cumprida { background: var(--gold); color: #fff; border-color: var(--gold); }
+
+.trilha-legenda { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 10px; padding-top: 14px; border-top: 1px solid var(--line); font-size: .74rem; color: var(--ink-soft); }
+.trilha-legenda span { display: inline-flex; align-items: center; gap: 6px; }
+
+/* ============================ Progresso =============================== */
+
+.progress-wrap { margin-bottom: 18px; }
+.progress-bar { height: 10px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 999px; background: var(--navy); animation: fill 1s cubic-bezier(.3,.9,.3,1) both; }
+.progress-meta { display: flex; justify-content: space-between; font-size: .74rem; color: var(--ink-soft); margin-top: 7px; font-weight: 500; }
+
+/* ============================ Categorias (chips) ====================== */
+
+.plano-card { width: 100%; max-width: 600px; padding: 36px 34px; animation: fade .35s ease both; }
+.chip-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 8px 0 22px; }
+.chip {
+    display: flex; align-items: center; gap: 11px; padding: 13px 15px;
+    border-radius: var(--radius-sm); background: var(--surface);
+    border: 1px solid var(--line-2); cursor: pointer;
+    font-weight: 600; font-size: .88rem; color: var(--ink-soft);
+    transition: border-color .15s ease, color .15s ease, background .15s ease;
+}
+.chip .ico { width: 20px; height: 20px; color: var(--ink-dim); }
+.chip input { position: absolute; opacity: 0; pointer-events: none; }
+.chip:hover { border-color: var(--navy); color: var(--ink); }
+.chip:has(input:checked) { border-color: var(--navy); background: var(--blue-soft); color: var(--navy); }
+.chip:has(input:checked) .ico { color: var(--navy); }
+
+/* ============================ Histórico =============================== */
+
+.tabelas { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.tabela-card { padding: 20px 22px; }
+.tabela-card h3 { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.tabela-card h3 .ico { width: 18px; height: 18px; }
+.tabela-card h3 .ok { color: var(--good); }
+.tabela-card h3 .no { color: var(--bad); }
+table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+thead th { text-align: left; font-size: .68rem; text-transform: uppercase; letter-spacing: .6px; color: var(--ink-dim); padding: 7px 8px; border-bottom: 1px solid var(--line); }
+tbody td { padding: 10px 8px; border-bottom: 1px solid var(--line); color: var(--ink); }
+tbody tr:last-child td { border-bottom: 0; }
+.vazio { color: var(--ink-dim); font-size: .85rem; padding: 16px 2px; }
+.count-badge { margin-left: auto; font-size: .74rem; font-weight: 700; background: var(--surface-2); border: 1px solid var(--line); padding: 2px 9px; border-radius: 999px; color: var(--ink-soft); }
+
+/* ============================ Foco / timer ============================ */
+
+.foco-card { width: 100%; max-width: 440px; text-align: center; padding: 36px 32px; animation: fade .35s ease both; }
+.timer-ring { position: relative; width: 210px; height: 210px; margin: 10px auto 20px; }
+.timer-ring svg { transform: rotate(-90deg); }
+.timer-ring .track { stroke: var(--line); }
+.timer-ring .prog { stroke: var(--navy); stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+.timer-num { position: absolute; inset: 0; display: grid; place-content: center; font-size: 2.6rem; font-weight: 750; letter-spacing: -1px; font-variant-numeric: tabular-nums; color: var(--ink); }
+.timer-num small { display: block; font-size: .72rem; font-weight: 600; color: var(--ink-soft); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 4px; }
+.foco-titulo { display: inline-flex; align-items: center; gap: 8px; font-size: 1.25rem; font-weight: 700; }
+.foco-titulo .ico { color: var(--navy-2); }
+.foco-sub { color: var(--ink-soft); font-size: .88rem; margin: 6px 0 20px; }
+.foco-acoes { display: flex; flex-direction: column; gap: 10px; }
+
+/* ============================ Lock ==================================== */
+
+.lock-card { width: 100%; max-width: 420px; text-align: center; padding: 40px 34px; animation: fade .35s ease both; }
+.lock-card .icone { width: 60px; height: 60px; margin: 0 auto 14px; border-radius: 16px; display: grid; place-items: center; color: var(--navy); background: var(--blue-soft); }
+.lock-card .icone .ico { width: 30px; height: 30px; }
+.lock-card h1 { margin-bottom: 10px; }
+.lock-card p { color: var(--ink-soft); font-size: .9rem; }
+.contagem { font-size: 2.5rem; font-weight: 750; letter-spacing: .5px; font-variant-numeric: tabular-nums; margin: 20px 0 10px; color: var(--navy); }
+
+/* ============================ Flash ================================== */
+
+.flash-list { display: flex; flex-direction: column; gap: 9px; margin-bottom: 16px; }
+.flash { padding: 11px 15px; border-radius: var(--radius-sm); font-size: .86rem; font-weight: 550; border: 1px solid var(--line-2); }
+.flash.erro { background: var(--bad-bg); border-color: #F3D2D8; color: #9c2f41; }
+.flash.sucesso { background: var(--good-bg); border-color: #CDEBD9; color: #147a41; }
+
+/* Confete */
+#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 50; }
+
+/* ============================ Keyframes ============================== */
+
+@keyframes fade    { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes node-in { from { opacity: 0; transform: translateY(16px) scale(.5); } to { opacity: 1; transform: none; } }
+@keyframes fill    { from { width: 0; } }
+@keyframes bob     { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+
+/* ============================ Responsivo ============================= */
+
+@media (max-width: 820px) {
+    .app-shell { grid-template-columns: 1fr; }
+    .sidebar { flex-direction: row; align-items: center; gap: 12px; padding: 12px 16px; overflow-x: auto; }
+    .sidebar .brand { margin-bottom: 0; }
+    .sidebar nav { flex-direction: row; }
+    .user-card { display: none; }
+    .main { padding: 22px 18px; }
+    .tabelas, .row-2, .chip-grid { grid-template-columns: 1fr; }
+}
+
+/* Serpentina mais compacta em telas estreitas */
+@media (max-width: 620px) {
+    .marco { width: 48px; height: 48px; font-size: .9rem; }
+    .marco:nth-child(8n+2){ left: 44px; }
+    .marco:nth-child(8n+3){ left: 70px; }
+    .marco:nth-child(8n+4){ left: 44px; }
+    .marco:nth-child(8n+6){ left: -44px; }
+    .marco:nth-child(8n+7){ left: -70px; }
+    .marco:nth-child(8n+0){ left: -44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, .marco.hoje { animation: none !important; transition: none !important; }
+}

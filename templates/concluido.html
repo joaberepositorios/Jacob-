@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block titulo %}Trilha concluída · HabiTrilha{% endblock %}
+{% block conteudo %}
+
+<div class="acoes-card bloco" style="margin-top:30px;">
+    <div class="missao-icone" style="color:var(--gold); background:#FBF6E7;">{{ icon("chest") }}</div>
+    <div class="missao">Trilha de {{ plano.dias_totais }} dias concluída</div>
+    <div class="missao-detalhe">
+        Você fechou o ciclo de "{{ plano.categoria }}" com <strong>{{ plano.pontos }} pontos</strong>. Que constância!<br>
+        Veja o <a href="{{ url_for('historico') }}">histórico</a> para o detalhamento,
+        ou monte uma nova trilha para continuar evoluindo.
+    </div>
+    <div class="acoes-botoes">
+        <a href="{{ url_for('montar_plano') }}" class="btn btn-primary">{{ icon("play") }} Montar nova trilha</a>
+    </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<canvas id="confetti"></canvas>
+<script>
+    const cv = document.getElementById('confetti');
+    const ctx = cv.getContext('2d');
+    function resize() { cv.width = innerWidth; cv.height = innerHeight; }
+    resize(); addEventListener('resize', resize);
+
+    const cores = ['#12305F', '#1C4489', '#C9A227', '#1F9D57', '#2F6BFF'];
+    const peças = Array.from({length: 120}, () => ({
+        x: Math.random() * cv.width,
+        y: Math.random() * -cv.height,
+        r: 5 + Math.random() * 6,
+        c: cores[Math.floor(Math.random() * cores.length)],
+        vy: 2 + Math.random() * 3,
+        vx: -1.4 + Math.random() * 2.8,
+        rot: Math.random() * Math.PI,
+        vr: -0.14 + Math.random() * 0.28
+    }));
+
+    let t0 = performance.now();
+    function tick(t) {
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        peças.forEach(p => {
+            p.y += p.vy; p.x += p.vx; p.rot += p.vr;
+            if (p.y > cv.height + 20) { p.y = -20; p.x = Math.random() * cv.width; }
+            ctx.save();
+            ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+            ctx.fillStyle = p.c;
+            ctx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r * 0.6);
+            ctx.restore();
+        });
+        if (t - t0 < 5500) requestAnimationFrame(tick);
+        else ctx.clearRect(0, 0, cv.width, cv.height);
+    }
+    requestAnimationFrame(tick);
+</script>
+{% endblock %}

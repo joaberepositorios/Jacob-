@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}HabiTrilha{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+{% from "_icons.html" import icon %}
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand"><span class="logo">{{ icon("map") }}</span> Habi<span class="dot">Trilha</span></div>
+            <nav>
+                <a href="{{ url_for('dashboard') }}" class="{{ 'active' if request.endpoint == 'dashboard' else '' }}">{{ icon("target") }} Painel de hoje</a>
+                <a href="{{ url_for('historico') }}" class="{{ 'active' if request.endpoint == 'historico' else '' }}">{{ icon("chart") }} Histórico</a>
+            </nav>
+            {% if usuario_atual %}
+            <div class="user-card">
+                <div class="avatar">{{ icon("user") }}</div>
+                <div class="nome">{{ usuario_atual.nome }}</div>
+                <div>{{ usuario_atual.email }}</div>
+                <a href="{{ url_for('logout') }}">{{ icon("logout") }} Sair da conta</a>
+            </div>
+            {% endif %}
+        </aside>
+        <main class="main">
+            {% with mensagens = get_flashed_messages(with_categories=true) %}
+                {% if mensagens %}
+                <div class="flash-list">
+                    {% for categoria, msg in mensagens %}
+                        <div class="flash {{ categoria }}">{{ msg }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            {% endwith %}
+            {% block conteudo %}{% endblock %}
+        </main>
+    </div>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

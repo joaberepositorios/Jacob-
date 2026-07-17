@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block titulo %}Histórico · HabiTrilha{% endblock %}
+{% block conteudo %}
+
+<div class="page-head">
+    <div>
+        <div class="eyebrow">{{ plano.categoria }}</div>
+        <h1>Histórico da trilha</h1>
+    </div>
+    <div class="stat-row">
+        <div class="stat-pill pts">{{ icon("star") }} <span class="n">{{ plano.pontos }}</span> pts</div>
+    </div>
+</div>
+
+<div class="tabelas">
+    <div class="tabela-card">
+        <h3><span class="ok">{{ icon("check") }}</span> Missão cumprida <span class="count-badge">{{ cumpridas|length }}</span></h3>
+        {% if cumpridas %}
+        <table>
+            <thead><tr><th>Dia</th><th>Data</th></tr></thead>
+            <tbody>
+                {% for c in cumpridas %}
+                <tr><td>Dia {{ c.dia_numero }}</td><td>{{ c.data }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="vazio">Nenhum dia cumprido ainda. Bora começar.</div>
+        {% endif %}
+    </div>
+
+    <div class="tabela-card">
+        <h3><span class="no">{{ icon("x") }}</span> Missão falha <span class="count-badge">{{ falhas|length }}</span></h3>
+        {% if falhas %}
+        <table>
+            <thead><tr><th>Dia</th><th>Data</th></tr></thead>
+            <tbody>
+                {% for f in falhas %}
+                <tr><td>Dia {{ f.dia_numero }}</td><td>{{ f.data }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="vazio">Nenhuma falha registrada ainda. Constância impecável.</div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

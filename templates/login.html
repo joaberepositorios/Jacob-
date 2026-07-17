@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar · HabiTrilha</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+{% from "_icons.html" import icon %}
+<body>
+    <div class="auth-wrap">
+        <div class="auth-card">
+            <div class="brand-mark"><span class="logo">{{ icon("map") }}</span> Habi<span class="dot">Trilha</span></div>
+            <div class="eyebrow">Bem-vindo de volta</div>
+            <h1>Entrar</h1>
+            <p class="desc">Sua trilha está esperando pela missão de hoje. Não quebre a sequência.</p>
+
+            {% with mensagens = get_flashed_messages(with_categories=true) %}
+                {% if mensagens %}
+                <div class="flash-list">
+                    {% for categoria, msg in mensagens %}
+                        <div class="flash {{ categoria }}">{{ msg }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="field">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" name="email" value="{{ email or '' }}" required autofocus>
+                </div>
+                <div class="field">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="senha" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Entrar</button>
+            </form>
+            <div class="auth-switch">
+                Ainda não tem conta? <a href="{{ url_for('cadastro') }}">Criar conta</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

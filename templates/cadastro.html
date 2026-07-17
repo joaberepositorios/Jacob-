@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar conta · HabiTrilha</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+{% from "_icons.html" import icon %}
+<body>
+    <div class="auth-wrap">
+        <div class="auth-card">
+            <div class="brand-mark"><span class="logo">{{ icon("map") }}</span> Habi<span class="dot">Trilha</span></div>
+            <div class="eyebrow">Dia zero da sua trilha</div>
+            <h1>Criar conta</h1>
+            <p class="desc">40 dias de constância começam com um cadastro de 1 minuto.</p>
+
+            {% with mensagens = get_flashed_messages(with_categories=true) %}
+                {% if mensagens %}
+                <div class="flash-list">
+                    {% for categoria, msg in mensagens %}
+                        <div class="flash {{ categoria }}">{{ msg }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('cadastro') }}">
+                <div class="field">
+                    <label for="nome">Nome completo</label>
+                    <input type="text" id="nome" name="nome" value="{{ nome or '' }}" required>
+                </div>
+                <div class="row-2">
+                    <div class="field">
+                        <label for="numero">Telefone</label>
+                        <input type="tel" id="numero" name="numero" value="{{ numero or '' }}" required>
+                    </div>
+                    <div class="field">
+                        <label for="idade">Idade</label>
+                        <input type="number" id="idade" name="idade" min="10" max="120" value="{{ idade or '' }}" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" name="email" value="{{ email or '' }}" required>
+                </div>
+                <div class="row-2">
+                    <div class="field">
+                        <label for="senha">Senha</label>
+                        <input type="password" id="senha" name="senha" required>
+                    </div>
+                    <div class="field">
+                        <label for="confirmar_senha">Confirmar senha</label>
+                        <input type="password" id="confirmar_senha" name="confirmar_senha" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Criar minha conta</button>
+            </form>
+            <div class="auth-switch">
+                Já tem conta? <a href="{{ url_for('login') }}">Entrar</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

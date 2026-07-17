@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon, cat_icon %}
+{% block titulo %}Painel de hoje · HabiTrilha{% endblock %}
+{% block conteudo %}
+
+<div class="page-head">
+    <div>
+        <div class="eyebrow">{{ cat_icon(plano.categoria, "ico ico-sm") }} {{ plano.categoria }}</div>
+        <h1>Dia {{ dia_numero }} de {{ plano.dias_totais }}</h1>
+    </div>
+    <div class="stat-row">
+        <div class="stat-pill flame">{{ icon("zap") }} <span class="n">{{ sequencia }}</span> seguidos</div>
+        <div class="stat-pill pts">{{ icon("star") }} <span class="n">{{ plano.pontos }}</span> pts</div>
+    </div>
+</div>
+
+<div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" style="width: {{ pct }}%;"></div></div>
+    <div class="progress-meta">
+        <span>{{ cumpridas_total }} missões cumpridas</span>
+        <span>{{ pct }}% da trilha</span>
+    </div>
+</div>
+
+{# 1) BOTÕES #}
+<div class="acoes-card bloco">
+    {% if registro_hoje %}
+        {% if registro_hoje.status == 'cumprida' %}
+        <div class="status-feito">
+            <span class="badge">{{ icon("check") }}</span>
+            <div>Missão de hoje marcada como <strong>cumprida</strong>. Volte amanhã para manter a sequência.</div>
+        </div>
+        {% else %}
+        <div class="status-feito falhou">
+            <span class="badge">{{ icon("x") }}</span>
+            <div>Você desistiu da missão de hoje. A trilha segue — amanhã é uma nova chance.</div>
+        </div>
+        {% endif %}
+    {% else %}
+        <div class="missao-icone">{{ cat_icon(plano.categoria, "ico") }}</div>
+        <div class="missao">Missão do dia {{ dia_numero }}</div>
+        <div class="missao-detalhe">{{ plano.tempo_por_dia_min }} minutos de "{{ plano.categoria }}", {{ plano.vezes_por_dia }}x hoje.</div>
+        <div class="acoes-botoes">
+            <a href="{{ url_for('foco') }}" class="btn btn-primary">{{ icon("play") }} Iniciar tarefa</a>
+            <form method="POST" action="{{ url_for('registrar_acao', tipo='cumprida') }}" onsubmit="return confirm('Confirmar que a missão de hoje foi cumprida? O app vai travar até 00:00.');">
+                <button type="submit" class="btn btn-good">{{ icon("check") }} Já cumpri a missão de hoje</button>
+            </form>
+        </div>
+        <div class="acoes-secundarias">
+            <form method="POST" action="{{ url_for('registrar_acao', tipo='falha') }}" onsubmit="return confirm('Desistir da missão de hoje? Você perde 1 ponto e o app trava até 00:00.');">
+                <button type="submit" class="btn btn-outline">{{ icon("x") }} Desistir de hoje</button>
+            </form>
+        </div>
+    {% endif %}
+</div>
+
+{# 2) CALENDÁRIO #}
+<div class="cal-card bloco">
+    <div class="cal-head">
+        <div class="sec-titulo" style="margin:0;">{{ icon("calendar") }} Calendário</div>
+        <div class="cal-mes">{{ calendario.titulo }}</div>
+    </div>
+    <div class="cal-grid">
+        {% for d in calendario.dow %}<div class="cal-dow">{{ d }}</div>{% endfor %}
+        {% for semana in calendario.semanas %}
+            {% for cel in semana %}
+                {% set cls = "cal-cel" %}
+                {% if cel.estado == "fora" %}{% set cls = cls ~ " fora" %}
+                {% elif cel.estado in ["cumprida","falha","futuro","hoje"] %}{% set cls = cls ~ " plano " ~ cel.estado %}{% endif %}
+                {% if cel.hoje %}{% set cls = cls ~ " hoje" %}{% endif %}
+                <div class="{{ cls }}">{{ cel.dia }}</div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+    <div class="cal-legenda">
+        <span><i class="legenda-dot" style="background:var(--good)"></i> Cumprida</span>
+        <span><i class="legenda-dot" style="background:var(--bad-bg); border:1px solid #F3D2D8"></i> Falha</span>
+        <span><i class="legenda-dot" style="background:#fff; border:2px solid var(--amber)"></i> Hoje</span>
+        <span><i class="legenda-dot" style="background:#fff; border:1px dashed var(--line-2)"></i> Futuro</span>
+    </div>
+</div>
+
+{# 3) TRILHA DO TESOURO — serpentina, círculos grandes, preenchidos ao concluir #}
+<div class="trilha-card bloco">
+    <div class="sec-titulo">{{ icon("map") }} Trilha do tesouro <span class="sub">{{ plano.tempo_por_dia_min }} min · {{ plano.vezes_por_dia }}x ao dia</span></div>
+    <div class="tesouro">
+        <div class="tesouro-nós">
+            {% for marco in trilha %}
+            <div class="marco {{ marco.estado }} {{ 'tesouro-fim' if loop.last else '' }}"
+                 style="--i: {{ loop.index0 }};" title="Dia {{ marco.dia }} · {{ marco.data_iso }}">
+                {% if loop.last %}{{ icon("chest") }}{% else %}{{ marco.label }}{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="trilha-legenda">
+        <span><i class="legenda-dot" style="background:var(--good)"></i> Concluído</span>
+        <span><i class="legenda-dot" style="background:#fff;border:2px solid var(--amber)"></i> Hoje</span>
+        <span><i class="legenda-dot" style="background:#fff;border:1px dashed var(--line-2)"></i> A fazer</span>
+        <span><i class="legenda-dot" style="background:#fff;border:1px dashed var(--bad)"></i> Falha</span>
+    </div>
+</div>
+
+{% endblock %}

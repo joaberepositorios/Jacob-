@@ -1,0 +1,22 @@
+# Banco local (dados de usuários / gerado em runtime) — nunca versionar
+habitrilha.db
+*.db
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# PyInstaller
+build/
+dist/
+*.spec
+
+# Sistema / editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
