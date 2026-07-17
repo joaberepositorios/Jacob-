@@ -6,11 +6,11 @@
     <title>Montar planejamento · HabiTrilha</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-{% from "_icons.html" import icon, cat_icon %}
+{% from "_icons.html" import icon, cat_icon, marca_j %}
 <body>
     <div class="plano-wrap">
         <div class="plano-card">
-            <div class="brand-mark"><span class="logo">{{ icon("map") }}</span> Habi<span class="dot">Trilha</span></div>
+            <div class="brand-mark">{{ marca_j() }}</div>
             <div class="eyebrow">Primeiro acesso</div>
             <h1>Monte seu planejamento</h1>
             <p class="desc">

@@ -12,9 +12,10 @@
         <div class="lock-card">
             <div class="icone">{{ icon("lock", "ico") }}</div>
             <h1>Missão de hoje registrada</h1>
-            <p>Você já confirmou sua missão de hoje. O HabiTrilha fica bloqueado até a virada do dia para manter a constância — sem reabrir o app para "compensar" ou desfazer.</p>
+            <p>Você já confirmou sua missão de hoje. Amanhã você pode continuar criando sua rotina e se habituando a executar uma tarefa todo dia.</p>
             <div class="contagem" id="contagem">--:--:--</div>
             <p style="font-size:.78rem;">Volte depois desse horário para ver o dia {{ limite.day }}.</p>
+            <a href="{{ url_for('dashboard', ver=1) }}" class="btn btn-outline" style="margin-top:20px;">{{ icon("chart") }} Acompanhar andamento</a>
         </div>
     </div>
     <script>

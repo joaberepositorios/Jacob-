@@ -6,11 +6,11 @@
     <title>Entrar · HabiTrilha</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-{% from "_icons.html" import icon %}
+{% from "_icons.html" import icon, marca_j %}
 <body>
     <div class="auth-wrap">
         <div class="auth-card">
-            <div class="brand-mark"><span class="logo">{{ icon("map") }}</span> Habi<span class="dot">Trilha</span></div>
+            <div class="brand-mark">{{ marca_j() }}</div>
             <div class="eyebrow">Bem-vindo de volta</div>
             <h1>Entrar</h1>
             <p class="desc">Sua trilha está esperando pela missão de hoje. Não quebre a sequência.</p>

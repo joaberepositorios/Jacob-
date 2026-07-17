@@ -49,3 +49,10 @@
 } -%}
 {{ icon(mapa.get(categoria, "star"), cls) }}
 {%- endmacro %}
+
+{#- Marca: a letra "J" (logo + título) -#}
+{% macro marca_j() -%}
+<span class="marca-j" aria-label="J">
+    <span class="mj-letra">J</span>
+</span>
+{%- endmacro %}

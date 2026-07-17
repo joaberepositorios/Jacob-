@@ -6,37 +6,39 @@
     <title>{% block titulo %}HabiTrilha{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-{% from "_icons.html" import icon %}
+{% from "_icons.html" import icon, marca_j %}
 <body>
-    <div class="app-shell">
-        <aside class="sidebar">
-            <div class="brand"><span class="logo">{{ icon("map") }}</span> Habi<span class="dot">Trilha</span></div>
-            <nav>
-                <a href="{{ url_for('dashboard') }}" class="{{ 'active' if request.endpoint == 'dashboard' else '' }}">{{ icon("target") }} Painel de hoje</a>
-                <a href="{{ url_for('historico') }}" class="{{ 'active' if request.endpoint == 'historico' else '' }}">{{ icon("chart") }} Histórico</a>
-            </nav>
-            {% if usuario_atual %}
-            <div class="user-card">
-                <div class="avatar">{{ icon("user") }}</div>
-                <div class="nome">{{ usuario_atual.nome }}</div>
-                <div>{{ usuario_atual.email }}</div>
-                <a href="{{ url_for('logout') }}">{{ icon("logout") }} Sair da conta</a>
+    <header class="topbar">
+        <a class="tb-brand" href="{{ url_for('dashboard') }}">{{ marca_j() }}</a>
+        <nav class="tb-tabs">
+            <a href="{{ url_for('dashboard') }}" class="tab {{ 'ativa' if request.endpoint == 'dashboard' else '' }}">{{ icon("target") }} <span>Painel de hoje</span></a>
+            <a href="{{ url_for('historico') }}" class="tab {{ 'ativa' if request.endpoint == 'historico' else '' }}">{{ icon("chart") }} <span>Histórico</span></a>
+        </nav>
+        {% if usuario_atual %}
+        <div class="tb-user">
+            {% if usuario_atual.admin %}
+            <form method="POST" action="{{ url_for('recomecar') }}" style="display:inline;"
+                  onsubmit="return confirm('Recomeçar do zero? Sua trilha atual será encerrada e você monta uma nova.');">
+                <button type="submit" class="tb-recomecar" title="Recomeçar (admin)">{{ icon("rocket") }} <span>Recomeçar</span></button>
+            </form>
+            {% endif %}
+            <span class="tb-nome">{{ usuario_atual.nome }}</span>
+            <a href="{{ url_for('logout') }}" class="tb-sair" title="Sair da conta">{{ icon("logout") }}</a>
+        </div>
+        {% endif %}
+    </header>
+    <main class="main">
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% if mensagens %}
+            <div class="flash-list">
+                {% for categoria, msg in mensagens %}
+                    <div class="flash {{ categoria }}">{{ msg }}</div>
+                {% endfor %}
             </div>
             {% endif %}
-        </aside>
-        <main class="main">
-            {% with mensagens = get_flashed_messages(with_categories=true) %}
-                {% if mensagens %}
-                <div class="flash-list">
-                    {% for categoria, msg in mensagens %}
-                        <div class="flash {{ categoria }}">{{ msg }}</div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-            {% endwith %}
-            {% block conteudo %}{% endblock %}
-        </main>
-    </div>
+        {% endwith %}
+        {% block conteudo %}{% endblock %}
+    </main>
     {% block scripts %}{% endblock %}
 </body>
 </html>

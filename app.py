@@ -32,6 +32,11 @@ app.secret_key = "troque-esta-chave-antes-de-distribuir"  # ver README para gera
 
 db.iniciar_banco()
 
+# Administradores do app (podem recomeçar a qualquer momento). Aplicado na inicialização.
+ADMIN_EMAILS = {"joabeealvez@gmail.com"}
+for _email in ADMIN_EMAILS:
+    db.definir_admin_por_email(_email, 1)
+
 EMAIL_REGEX = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 
@@ -182,8 +187,10 @@ def dashboard():
     if usuario["primeiro_acesso"]:
         return redirect(url_for("montar_plano"))
 
-    if esta_travado(usuario):
-        limite = datetime.fromisoformat(usuario["locked_until"])
+    travado = esta_travado(usuario)
+    limite = datetime.fromisoformat(usuario["locked_until"]) if usuario.get("locked_until") else None
+    # Bloqueado: por padrão mostra a tela de bloqueio; com ?ver=1 abre em modo só-leitura.
+    if travado and not request.args.get("ver"):
         return render_template("travado.html", limite=limite)
 
     plano = db.buscar_plano_ativo(usuario["id"])
@@ -216,6 +223,8 @@ def dashboard():
         sequencia=sequencia,
         pct=pct,
         calendario=calendario,
+        travado=travado,
+        limite=limite,
     )
 
 
@@ -334,6 +343,20 @@ def foco():
         dia_numero=dia_numero,
         total_segundos=total_segundos,
     )
+
+
+@app.route("/recomecar", methods=["POST"])
+def recomecar():
+    usuario = usuario_logado()
+    if not usuario:
+        return redirect(url_for("login"))
+    if not usuario.get("admin"):
+        flash("Apenas administradores podem recomeçar a qualquer momento.", "erro")
+        return redirect(url_for("dashboard"))
+
+    db.resetar_usuario(usuario["id"])
+    flash("Status resetado! Monte sua nova trilha.", "sucesso")
+    return redirect(url_for("montar_plano"))
 
 
 @app.route("/acao/<tipo>", methods=["POST"])

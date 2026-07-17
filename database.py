@@ -26,7 +26,6 @@ CATEGORIAS = [
     "Estudo",
     "Leitura",
     "Entretenimento",
-    "Saúde e exercício",
     "Finanças pessoais",
     "Trabalho / carreira",
     "Outro",
@@ -54,6 +53,7 @@ def iniciar_banco():
             idade INTEGER NOT NULL,
             primeiro_acesso INTEGER NOT NULL DEFAULT 1,
             locked_until TEXT,
+            admin INTEGER NOT NULL DEFAULT 0,
             criado_em TEXT NOT NULL
         );
 
@@ -83,6 +83,10 @@ def iniciar_banco():
         );
         """
     )
+    # Migração: garante a coluna admin em bancos já existentes.
+    cols = [r[1] for r in cur.execute("PRAGMA table_info(usuarios)")]
+    if "admin" not in cols:
+        cur.execute("ALTER TABLE usuarios ADD COLUMN admin INTEGER NOT NULL DEFAULT 0")
     con.commit()
     con.close()
 
@@ -136,6 +140,35 @@ def definir_trava(usuario_id, locked_until_iso):
     con = conectar()
     try:
         con.execute("UPDATE usuarios SET locked_until = ? WHERE id = ?", (locked_until_iso, usuario_id))
+        con.commit()
+    finally:
+        con.close()
+
+
+def definir_admin(usuario_id, valor=1):
+    con = conectar()
+    try:
+        con.execute("UPDATE usuarios SET admin = ? WHERE id = ?", (1 if valor else 0, usuario_id))
+        con.commit()
+    finally:
+        con.close()
+
+
+def definir_admin_por_email(email, valor=1):
+    con = conectar()
+    try:
+        con.execute("UPDATE usuarios SET admin = ? WHERE email = ?", (1 if valor else 0, email.lower().strip()))
+        con.commit()
+    finally:
+        con.close()
+
+
+def resetar_usuario(usuario_id):
+    """Zera o status para recomeçar: destrava e desativa o(s) plano(s) ativo(s)."""
+    con = conectar()
+    try:
+        con.execute("UPDATE usuarios SET locked_until = NULL WHERE id = ?", (usuario_id,))
+        con.execute("UPDATE planos SET ativo = 0 WHERE usuario_id = ? AND ativo = 1", (usuario_id,))
         con.commit()
     finally:
         con.close()

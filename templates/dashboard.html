@@ -3,9 +3,16 @@
 {% block titulo %}Painel de hoje · HabiTrilha{% endblock %}
 {% block conteudo %}
 
+{% if travado %}
+<div class="lock-note">
+    {{ icon("lock") }}
+    <span>Modo somente leitura — você já registrou hoje. Nenhuma tarefa pode ser feita até a virada do dia.</span>
+    <a href="{{ url_for('dashboard') }}">ver contagem →</a>
+</div>
+{% endif %}
+
 <div class="page-head">
     <div>
-        <div class="eyebrow">{{ cat_icon(plano.categoria, "ico ico-sm") }} {{ plano.categoria }}</div>
         <h1>Dia {{ dia_numero }} de {{ plano.dias_totais }}</h1>
     </div>
     <div class="stat-row">
@@ -26,17 +33,36 @@
 <div class="acoes-card bloco">
     {% if registro_hoje %}
         {% if registro_hoje.status == 'cumprida' %}
-        <div class="status-feito">
-            <span class="badge">{{ icon("check") }}</span>
-            <div>Missão de hoje marcada como <strong>cumprida</strong>. Volte amanhã para manter a sequência.</div>
+        <div class="status-feito fogo-aviso sucesso">
+            <div class="fogo" aria-hidden="true">
+                <span class="flare"></span>
+                <span class="brasa"></span>
+                <span class="chama c1"></span>
+                <span class="chama c2"></span>
+                <span class="chama c3"></span>
+            </div>
+            <div class="txt">
+                <div class="titulo-fogo">Missão cumprida hoje!</div>
+                <div class="sub-fogo">Você tá <strong>pegando fogo</strong> — volte amanhã para manter a chama acesa.</div>
+            </div>
         </div>
         {% else %}
-        <div class="status-feito falhou">
-            <span class="badge">{{ icon("x") }}</span>
-            <div>Você desistiu da missão de hoje. A trilha segue — amanhã é uma nova chance.</div>
+        <div class="status-feito falhou fogo-aviso congelou">
+            <div class="fogo" aria-hidden="true">
+                <span class="flare"></span>
+                <span class="brasa"></span>
+                <span class="chama c1"></span>
+                <span class="chama c2"></span>
+                <span class="chama c3"></span>
+                <span class="pedra-gelo"></span>
+            </div>
+            <div class="txt">
+                <div class="titulo-fogo">Você <span class="destaque">DESISTIU</span> de uma missão hoje</div>
+                <div class="sub-fogo">A chama acendeu e <strong>congelou</strong>… mas amanhã ela pode queimar de novo.</div>
+            </div>
         </div>
         {% endif %}
-    {% else %}
+    {% elif not travado %}
         <div class="missao-icone">{{ cat_icon(plano.categoria, "ico") }}</div>
         <div class="missao">Missão do dia {{ dia_numero }}</div>
         <div class="missao-detalhe">{{ plano.tempo_por_dia_min }} minutos de "{{ plano.categoria }}", {{ plano.vezes_por_dia }}x hoje.</div>
@@ -50,6 +76,11 @@
             <form method="POST" action="{{ url_for('registrar_acao', tipo='falha') }}" onsubmit="return confirm('Desistir da missão de hoje? Você perde 1 ponto e o app trava até 00:00.');">
                 <button type="submit" class="btn btn-outline">{{ icon("x") }} Desistir de hoje</button>
             </form>
+        </div>
+    {% else %}
+        <div class="status-feito">
+            <span class="badge" style="background:var(--ink-soft);">{{ icon("lock") }}</span>
+            <div>App bloqueado até a virada do dia. Você pode <strong>acompanhar o andamento</strong>, mas não executar tarefas agora.</div>
         </div>
     {% endif %}
 </div>
@@ -101,4 +132,174 @@
     </div>
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    const aviso = document.querySelector('.fogo-aviso');
+    if (!aviso) return;
+    const fogo = aviso.querySelector('.fogo');
+    const txt  = aviso.querySelector('.txt');
+    const congela = aviso.classList.contains('congelou');
+    const modo = congela ? 'neve' : 'fogo';   // cumprida => fogo, desistiu => neve
+
+    // Respeita quem prefere menos animação: acende (e congela) e mostra direto.
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        fogo.classList.add('aceso');
+        if (congela) fogo.classList.add('congelando');
+        txt.classList.add('revelar');
+        return;
+    }
+
+    // Canvas em coordenadas de PÁGINA (absolute), para rolar junto com o conteúdo.
+    const cv = document.createElement('canvas');
+    cv.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;z-index:60';
+    document.body.appendChild(cv);
+    const ctx = cv.getContext('2d');
+    function resize() {
+        cv.width = document.documentElement.clientWidth;
+        cv.height = Math.max(document.documentElement.scrollHeight, innerHeight);
+    }
+    resize(); addEventListener('resize', resize);
+
+    // Alvo = posição do fogo em coordenadas de página (soma o scroll).
+    const r = fogo.getBoundingClientRect();
+    const alvoX = r.left + window.scrollX + r.width / 2;
+    const alvoY = r.top + window.scrollY + r.height * 0.55;
+
+    const rnd = (a, b) => a + Math.random() * (b - a);
+    const espalha = Math.min(innerWidth * 0.42, 340);
+    const CORES_FOGO = ['#FFE08A', '#FFD24C', '#FF9F2E', '#FF6A1A', '#FFB347'];
+    const CORES_NEVE = ['#FFFFFF', '#EAF7FF', '#CDEBFF', '#A9D8FF'];
+
+    // Fábrica: cada resultado gera um tipo de partícula (fogo ou neve).
+    function novaParticula(i) {
+        const base = {
+            x: alvoX + rnd(-1, 1) * espalha,
+            y: alvoY - rnd(60, 440),          // nasce acima do fogo (coord. de página)
+            rot: rnd(0, Math.PI * 2),
+            px: 0, py: 0, pousou: false, a: 1, escala: 1
+        };
+        if (modo === 'neve') {
+            return Object.assign(base, {
+                tipo: 'neve',
+                vy: rnd(0.7, 1.8), vx: rnd(-0.3, 0.3),
+                r: rnd(2.2, 4.6),
+                c: CORES_NEVE[i % CORES_NEVE.length],
+                spin: rnd(-0.05, 0.05),
+                swA: rnd(20, 48), swF: rnd(0.4, 1.1), swP: rnd(0, Math.PI * 2),
+                twF: rnd(2, 4), twP: rnd(0, Math.PI * 2)
+            });
+        }
+        return Object.assign(base, {
+            tipo: 'fogo',
+            vy: rnd(1.4, 3.0), vx: rnd(-0.4, 0.4),
+            r: rnd(1.6, 4.2),
+            c: CORES_FOGO[i % CORES_FOGO.length],
+            spin: rnd(-0.14, 0.14),
+            swA: rnd(10, 34), swF: rnd(0.7, 1.9), swP: rnd(0, Math.PI * 2),
+            twF: rnd(3, 7), twP: rnd(0, Math.PI * 2),
+            fagulha: Math.random() < 0.55       // fagulha alongada ou brasa redonda
+        });
+    }
+    const N = modo === 'neve' ? 44 : 58;
+    const parts = Array.from({ length: N }, (_, i) => novaParticula(i));
+
+    const t0 = performance.now();
+    const T_ACENDER  = 1250;
+    const T_CONGELAR = 2100;                        // chama para + pedra de gelo começa a formar
+    const T_TEXTO  = congela ? 3150 : 1780;         // texto após o gelo formar
+    const T_EMITIR = congela ? 4200 : 3800;         // até quando surgem novas partículas (fluxo contínuo)
+    const T_FIM    = congela ? 5600 : 5200;         // canvas some depois que as últimas caem
+    const FADE     = 1000;                           // duração do fade-out para invisível
+    const T_SUMIR  = T_FIM - FADE;                   // início do fade-out
+    let acendeu = false, congelou = false, revelou = false;
+
+    function desenhaFogo(p, x, y) {
+        ctx.save();
+        ctx.translate(x, y); ctx.rotate(p.rot); ctx.scale(p.escala, p.escala);
+        ctx.fillStyle = p.c; ctx.shadowColor = p.c; ctx.shadowBlur = 10;
+        ctx.beginPath();
+        if (p.fagulha) {
+            const w = p.r * 1.6, h = p.r * 0.9, rr = h / 2;
+            ctx.moveTo(-w + rr, -h); ctx.arcTo(w, -h, w, h, rr);
+            ctx.arcTo(w, h, -w, h, rr); ctx.arcTo(-w, h, -w, -h, rr);
+            ctx.arcTo(-w, -h, w, -h, rr);
+        } else {
+            ctx.arc(0, 0, p.r, 0, Math.PI * 2);
+        }
+        ctx.fill(); ctx.restore();
+    }
+
+    function desenhaNeve(p, x, y) {
+        ctx.save();
+        ctx.translate(x, y); ctx.rotate(p.rot);
+        ctx.strokeStyle = p.c; ctx.lineWidth = Math.max(1, p.r * 0.34); ctx.lineCap = 'round';
+        ctx.shadowColor = p.c; ctx.shadowBlur = 6;
+        for (let k = 0; k < 3; k++) {          // 3 traços = floco de 6 pontas
+            ctx.rotate(Math.PI / 3);
+            ctx.beginPath(); ctx.moveTo(-p.r, 0); ctx.lineTo(p.r, 0); ctx.stroke();
+        }
+        ctx.fillStyle = p.c; ctx.beginPath(); ctx.arc(0, 0, p.r * 0.28, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+    }
+
+    function frame(t) {
+        const el = t - t0, ts = el / 1000;
+        ctx.clearRect(0, 0, cv.width, cv.height);
+
+        // fade-out global: 1 -> 0 nos últimos FADE ms (cut out para invisível)
+        const fade = el < T_SUMIR ? 1 : Math.max(0, 1 - (el - T_SUMIR) / FADE);
+
+        parts.forEach((p, i) => {
+            if (p.a <= 0) {
+                if (el < T_EMITIR) Object.assign(p, novaParticula(i));  // recicla: fluxo contínuo
+                else return;
+            }
+            if (!p.pousou) {
+                if (p.tipo === 'neve') {
+                    p.vx += (alvoX - p.x) * 0.0003;   // atração suave
+                    p.vy += 0.014;                     // desce mansa
+                } else {
+                    p.vx += (alvoX - p.x) * 0.0007;   // puxa para o fogo
+                    p.vy += 0.035;                     // gravidade leve
+                }
+                p.x += p.vx; p.y += p.vy; p.rot += p.spin;
+                if (p.y >= alvoY) {
+                    p.pousou = true;
+                    if (p.tipo === 'fogo') p.escala = 1.5;   // brasa "estala"
+                }
+            } else {
+                p.a -= p.tipo === 'neve' ? 0.03 : 0.05;       // some mais devagar
+                if (p.tipo === 'fogo') { p.escala += (1 - p.escala) * 0.2; p.y -= 0.3; }
+            }
+
+            const sway = p.swA * Math.sin(ts * p.swF + p.swP);
+            const dx = p.x + sway, dy = p.y;
+            const twinkle = 0.6 + 0.4 * Math.sin(ts * p.twF + p.twP);
+            const alpha = Math.max(0, Math.min(1, p.a)) * twinkle * fade;
+
+            // rastro (só fogo)
+            if (p.tipo === 'fogo' && p.px && !p.pousou) {
+                ctx.globalAlpha = alpha * 0.35;
+                ctx.strokeStyle = p.c; ctx.lineWidth = p.r * 0.9; ctx.lineCap = 'round';
+                ctx.beginPath(); ctx.moveTo(p.px, p.py); ctx.lineTo(dx, dy); ctx.stroke();
+            }
+            ctx.globalAlpha = alpha;
+            if (p.tipo === 'neve') desenhaNeve(p, dx, dy); else desenhaFogo(p, dx, dy);
+            p.px = dx; p.py = dy;
+        });
+        ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+
+        if (!acendeu && el >= T_ACENDER) { fogo.classList.add('aceso'); acendeu = true; }
+        if (congela && !congelou && el >= T_CONGELAR) { fogo.classList.add('congelando'); congelou = true; }
+        if (!revelou && el >= T_TEXTO)  { txt.classList.add('revelar'); revelou = true; }
+
+        if (el < T_FIM) requestAnimationFrame(frame);
+        else cv.remove();
+    }
+    requestAnimationFrame(frame);
+})();
+</script>
 {% endblock %}

@@ -6,11 +6,11 @@
     <title>Foco · HabiTrilha</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-{% from "_icons.html" import icon %}
+{% from "_icons.html" import icon, marca_j %}
 <body>
     <div class="foco-wrap">
         <div class="foco-card">
-            <div class="brand-mark" style="justify-content:center;"><span class="logo">{{ icon("map") }}</span> Habi<span class="dot">Trilha</span></div>
+            <div class="brand-mark" style="justify-content:center;">{{ marca_j() }}</div>
             <div class="foco-titulo">{{ icon("target") }} Foco na missão</div>
             <div class="foco-sub">{{ plano.categoria }} · dia {{ dia_numero }} · {{ plano.vezes_por_dia }}x hoje</div>
 
