@@ -120,7 +120,7 @@ a:hover { color: var(--blue); }
 .auth-card h1 { margin-bottom: 4px; }
 
 /* Marca */
-.brand-mark { display: inline-flex; align-items: center; gap: 9px; font-weight: 750; font-size: 1.1rem; letter-spacing: -.3px; margin-bottom: 22px; color: var(--ink); }
+.brand-mark { display: flex; align-items: center; gap: 9px; font-weight: 750; font-size: 1.1rem; letter-spacing: -.3px; margin-bottom: 18px; color: var(--ink); }
 .brand-mark .logo, .sidebar .brand .logo {
     width: 34px; height: 34px; border-radius: 9px;
     display: grid; place-items: center; color: #fff; background: var(--navy);
