@@ -20,3 +20,6 @@ dist/
 Thumbs.db
 .idea/
 .vscode/
+
+# Imagens do artigo (não versionar)
+imagens artigo/
